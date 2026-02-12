@@ -1,0 +1,65 @@
+import { GripHorizontal, MoreVertical, X } from 'lucide-react';
+import { useState } from 'react';
+
+export interface MemoData {
+    id: string;
+    content: string;
+    createdAt: string;
+}
+
+interface MemoProps {
+    data: MemoData;
+    onUpdate: (id: string, content: string) => void;
+    onDelete: (id: string) => void;
+    autoFocus?: boolean;
+}
+
+export function Memo({ data, onUpdate, onDelete, autoFocus }: MemoProps) {
+    const [isFocused, setIsFocused] = useState(false);
+
+    return (
+        <div
+            className={`
+            group relative flex flex-col w-full
+            bg-white rounded-2xl shadow-sm border border-theme-border/50
+            transition-all duration-200 ease-out
+            hover:shadow-md hover:-translate-y-0.5
+            ${isFocused ? 'ring-2 ring-theme-accent/20 border-theme-accent' : ''}
+        `}
+        >
+            {/* Header / Drag Handle */}
+            <div className="flex items-center justify-between px-3 py-2 border-b border-theme-border/30 cursor-move text-theme-fg/40 hover:text-theme-fg/60 transition-colors">
+                <GripHorizontal className="w-4 h-4" />
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                        onClick={() => onDelete(data.id)}
+                        className="p-1 hover:bg-theme-bg-soft rounded text-theme-fg/40 hover:text-red-400"
+                    >
+                        <X className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="p-1 hover:bg-theme-bg-soft rounded">
+                        <MoreVertical className="w-3.5 h-3.5" />
+                    </button>
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-0">
+                <textarea
+                    value={data.content}
+                    onChange={(e) => onUpdate(data.id, e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    placeholder="Take a note..."
+                    autoFocus={autoFocus}
+                    className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-base leading-relaxed textarea-autosize rounded-b-2xl"
+                />
+            </div>
+
+            {/* Footer */}
+            <div className="px-4 py-2 border-t border-theme-border/30 text-[10px] font-medium text-theme-fg/30 uppercase tracking-wider flex justify-end">
+                {data.createdAt}
+            </div>
+        </div>
+    );
+}
