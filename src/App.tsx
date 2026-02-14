@@ -1,60 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
-import { loadMemos, saveMemo, deleteMemo, type MemoData } from './utils/fileStorage';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { Memo } from './components/Memo';
 import { FAB } from './components/FAB';
+import { useMemos } from './hooks/useMemos';
 
 const BOARDS = ['Personal', 'Work', 'Ideas', 'Travel'];
 
 function App() {
   const [activeBoard, setActiveBoard] = useState('Personal');
-  const [memos, setMemos] = useState<MemoData[]>([]);
-  const [lastCreatedId, setLastCreatedId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    loadMemos().then(setMemos).catch(console.error);
-  }, []);
+  const { memos, lastCreatedId, addMemo, updateMemo, deleteMemo } = useMemos();
 
   useEffect(() => {
     if (lastCreatedId) {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [memos, lastCreatedId]);
-
-  const saveTimeoutRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-
-  const handleUpdateMemo = (id: string, content: string) => {
-    // Optimistic update for immediate UI response (fixes IME issues)
-    setMemos(prev => prev.map(memo => memo.id === id ? { ...memo, content } : memo));
-
-    // Debounce the file save
-    if (saveTimeoutRef.current[id]) {
-      clearTimeout(saveTimeoutRef.current[id]);
-    }
-
-    saveTimeoutRef.current[id] = setTimeout(() => {
-      saveMemo(content, id).catch(console.error);
-      delete saveTimeoutRef.current[id];
-    }, 500);
-  };
-
-  const handleDeleteMemo = async (id: string) => {
-    await deleteMemo(id);
-    setMemos(memos.filter(memo => memo.id !== id));
-  };
-
-  const handleAddMemo = async () => {
-    try {
-      const newMemo = await saveMemo('');
-      setMemos(prev => [...prev, newMemo]);
-      setLastCreatedId(newMemo.id);
-    } catch (error) {
-      console.error('Failed to create memo:', error);
-      alert('Failed to create memo. See console for details.');
-    }
-  };
 
   return (
     <div className="flex h-screen bg-theme-bg overflow-hidden text-theme-fg font-sans selection:bg-theme-accent/30">
@@ -75,8 +37,8 @@ function App() {
               <Memo
                 key={memo.id}
                 data={memo}
-                onUpdate={handleUpdateMemo}
-                onDelete={handleDeleteMemo}
+                onUpdate={updateMemo}
+                onDelete={deleteMemo}
                 autoFocus={memo.id === lastCreatedId}
               />
             ))}
@@ -85,7 +47,7 @@ function App() {
         </main>
 
         {/* Floating Action Button */}
-        <FAB onClick={handleAddMemo} />
+        <FAB onClick={addMemo} />
       </div>
     </div>
   );

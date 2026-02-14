@@ -1,12 +1,7 @@
 import { BaseDirectory, readDir, readTextFile, writeTextFile, remove, exists, mkdir } from '@tauri-apps/plugin-fs';
+import type { MemoData } from '../types';
 
 const SUBDIR = 'memos';
-
-export interface MemoData {
-    id: string; // filename
-    content: string;
-    createdAt: string;
-}
 
 async function ensureMemosDirectory() {
     try {

@@ -1,14 +1,10 @@
 import { GripHorizontal, MoreVertical, X } from 'lucide-react';
 import { useState } from 'react';
-
-export interface MemoData {
-    id: string;
-    content: string;
-    createdAt: string;
-}
+import type { MemoData } from '../types';
 
 interface MemoProps {
     data: MemoData;
+
     onUpdate: (id: string, content: string) => void;
     onDelete: (id: string) => void;
     autoFocus?: boolean;
