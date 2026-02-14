@@ -16,9 +16,11 @@ export function useMemos() {
             const newMemo = await saveMemoToFile('');
             setMemos(prev => [...prev, newMemo]);
             setLastCreatedId(newMemo.id);
+            return newMemo;
         } catch (error) {
             console.error('Failed to create memo:', error);
             alert('Failed to create memo. See console for details.');
+            return null;
         }
     }, []);
 

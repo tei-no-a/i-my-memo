@@ -1,4 +1,4 @@
-import { Menu, Search, Filter } from 'lucide-react';
+import { Menu, Search, Filter, MoreVertical } from 'lucide-react';
 
 interface HeaderProps {
     title: string;
@@ -26,6 +26,9 @@ export function Header({ title }: HeaderProps) {
                 </div>
                 <button className="p-2 rounded-full hover:bg-theme-bg-soft text-theme-fg/60 hover:text-theme-fg transition-colors">
                     <Filter className="w-5 h-5" />
+                </button>
+                <button className="p-2 rounded-full hover:bg-theme-bg-soft text-theme-fg/60 hover:text-theme-fg transition-colors">
+                    <MoreVertical className="w-5 h-5" />
                 </button>
             </div>
         </header>
