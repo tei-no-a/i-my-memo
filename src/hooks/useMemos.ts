@@ -11,7 +11,7 @@ export function useMemos() {
         loadMemos().then(setMemos).catch(console.error);
     }, []);
 
-    const addMemo = useCallback(async () => {
+    const createMemoFile = useCallback(async () => {
         try {
             const newMemo = await saveMemoToFile('');
             setMemos(prev => [...prev, newMemo]);
@@ -39,20 +39,22 @@ export function useMemos() {
         }, 500);
     }, []);
 
-    const deleteMemo = useCallback(async (id: string) => {
+    const deleteMemoFile = useCallback(async (id: string) => {
         try {
             await deleteMemoFromFile(id);
             setMemos(prev => prev.filter(memo => memo.id !== id));
+            return true;
         } catch (error) {
             console.error('Failed to delete memo:', error);
+            return false;
         }
     }, []);
 
     return {
         memos,
         lastCreatedId,
-        addMemo,
+        createMemoFile,
         updateMemo,
-        deleteMemo
+        deleteMemoFile
     };
 }

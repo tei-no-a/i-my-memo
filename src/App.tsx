@@ -1,35 +1,24 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { Memo } from './components/Memo';
 import { FAB } from './components/FAB';
-import { useMemos } from './hooks/useMemos';
-import { useNotes } from './hooks/useNotes';
-import type { MemoData } from './types';
+import { useWorkspace } from './hooks/useWorkspace';
 
 function App() {
-  const { notes, activeNoteId, setActiveNoteId, activeNote, addMemoToNote } = useNotes();
+  const {
+    notes,
+    activeNote,
+    activeNoteId,
+    selectNote,
+    memos,
+    lastCreatedId,
+    createMemo,
+    updateMemo,
+    deleteMemo
+  } = useWorkspace();
+
   const bottomRef = useRef<HTMLDivElement>(null);
-  const { memos, lastCreatedId, addMemo: createMemoFile, updateMemo, deleteMemo } = useMemos();
-
-  // Filter memos belonging to the active note and preserve order
-  const displayedMemos = useMemo(() => {
-    const memoMap = new Map(memos.map(m => [m.id, m]));
-    return activeNote.memoIds
-      .map(id => memoMap.get(id))
-      .filter((m): m is MemoData => m !== undefined);
-  }, [memos, activeNote]);
-
-  const handleAddMemo = async () => {
-    try {
-      const newMemo = await createMemoFile();
-      if (newMemo) {
-        await addMemoToNote(activeNoteId, newMemo.id);
-      }
-    } catch (error) {
-      console.error("Failed to add memo", error);
-    }
-  };
 
   useEffect(() => {
     if (lastCreatedId && activeNote.memoIds.includes(lastCreatedId)) {
@@ -43,7 +32,7 @@ function App() {
       <Sidebar
         notes={notes}
         activeNoteId={activeNoteId}
-        onSelectNote={setActiveNoteId}
+        onSelectNote={selectNote}
       />
 
       {/* Main Content */}
@@ -52,12 +41,12 @@ function App() {
 
         <main className="flex-1 overflow-y-auto p-6 md:p-8">
           <div className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch pb-24">
-            {displayedMemos.length === 0 ? (
+            {memos.length === 0 ? (
               <div className="text-center text-theme-fg/40 mt-20">
                 <p>No memos in this note.</p>
               </div>
             ) : (
-              displayedMemos.map((memo) => (
+              memos.map((memo) => (
                 <Memo
                   key={memo.id}
                   data={memo}
@@ -72,7 +61,7 @@ function App() {
         </main>
 
         {/* Floating Action Button */}
-        <FAB onClick={handleAddMemo} />
+        <FAB onClick={createMemo} />
       </div>
     </div>
   );

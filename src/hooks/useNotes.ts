@@ -83,6 +83,21 @@ export function useNotes() {
         await saveNotes(updatedNotes);
     }, [notes, saveNotes]);
 
+    const removeMemoFromNote = useCallback(async (noteId: string, memoId: string) => {
+        const updatedNotes = notes.map(note => {
+            if (note.id === noteId) {
+                return {
+                    ...note,
+                    memoIds: note.memoIds.filter(id => id !== memoId),
+                    updatedAt: new Date().toISOString()
+                };
+            }
+            return note;
+        });
+
+        await saveNotes(updatedNotes);
+    }, [notes, saveNotes]);
+
     // Helper to get active note object
     const activeNote = notes.find(n => n.id === activeNoteId) || DEFAULT_NOTES[0];
 
@@ -91,6 +106,7 @@ export function useNotes() {
         activeNoteId,
         setActiveNoteId,
         activeNote,
-        addMemoToNote
+        addMemoToNote,
+        removeMemoFromNote
     };
 }
