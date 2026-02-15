@@ -1,4 +1,7 @@
 import { useRef, useEffect } from 'react';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { Memo } from './components/Memo';
@@ -16,7 +19,8 @@ function App() {
     lastCreatedId,
     createMemo,
     updateMemo,
-    deleteMemo
+    deleteMemo,
+    reorderMemos
   } = useWorkspace();
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -26,6 +30,16 @@ function App() {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [memos, lastCreatedId, activeNote]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = activeNote.memoIds.indexOf(active.id as string);
+      const newIndex = activeNote.memoIds.indexOf(over.id as string);
+      const newMemoIds = arrayMove(activeNote.memoIds, oldIndex, newIndex);
+      reorderMemos(activeNoteId, newMemoIds);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-theme-bg overflow-hidden text-theme-fg font-sans selection:bg-theme-accent/30">
@@ -48,15 +62,25 @@ function App() {
                 <p>No memos in this note.</p>
               </div>
             ) : (
-              memos.map((memo) => (
-                <Memo
-                  key={memo.id}
-                  data={memo}
-                  onUpdate={updateMemo}
-                  onDelete={deleteMemo}
-                  autoFocus={memo.id === lastCreatedId}
-                />
-              ))
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={activeNote.memoIds}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {memos.map((memo) => (
+                    <Memo
+                      key={memo.id}
+                      data={memo}
+                      onUpdate={updateMemo}
+                      onDelete={deleteMemo}
+                      autoFocus={memo.id === lastCreatedId}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             )}
             <div ref={bottomRef} />
           </div>

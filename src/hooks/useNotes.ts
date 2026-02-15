@@ -84,6 +84,21 @@ export function useNotes() {
         await saveNotes(updatedNotes);
     }, [notes, saveNotes]);
 
+    const reorderMemos = useCallback(async (noteId: string, newMemoIds: string[]) => {
+        const updatedNotes = notes.map(note => {
+            if (note.id === noteId) {
+                return {
+                    ...note,
+                    memoIds: newMemoIds,
+                    updatedAt: new Date().toISOString()
+                };
+            }
+            return note;
+        });
+
+        await saveNotes(updatedNotes);
+    }, [notes, saveNotes]);
+
     // Helper to get active note object
     const activeNote = notes.find(n => n.id === activeNoteId) || DEFAULT_NOTES[0];
 
@@ -94,6 +109,7 @@ export function useNotes() {
         activeNote,
         addMemoToNote,
         removeMemoFromNote,
+        reorderMemos,
         addNote
     };
 }

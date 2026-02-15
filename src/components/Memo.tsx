@@ -1,5 +1,7 @@
 import { GripHorizontal, MoreVertical, X } from 'lucide-react';
 import { useState } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import type { MemoData } from '../types';
 
 interface MemoProps {
@@ -13,20 +15,44 @@ interface MemoProps {
 export function Memo({ data, onUpdate, onDelete, autoFocus }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
 
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: data.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
     return (
         <div
+            ref={setNodeRef}
+            style={style}
             className={`
             group relative flex flex-col w-full
             bg-white rounded-2xl shadow-sm border border-theme-border/50
             transition-all duration-200 ease-out
             hover:shadow-md hover:-translate-y-0.5
             ${isFocused ? 'ring-2 ring-theme-accent/20 border-theme-accent' : ''}
+            ${isDragging ? 'opacity-50 shadow-lg scale-[1.02] z-50' : ''}
         `}
         >
             {/* Header / Drag Handle */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-theme-border/30 cursor-move text-theme-fg/40 hover:text-theme-fg/60 transition-colors">
+            <div
+                className="flex items-center justify-between px-3 py-2 border-b border-theme-border/30 cursor-grab active:cursor-grabbing text-theme-fg/40 hover:text-theme-fg/60 transition-colors"
+                {...attributes}
+                {...listeners}
+            >
                 <GripHorizontal className="w-4 h-4" />
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div
+                    className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onPointerDown={(e) => e.stopPropagation()}
+                >
                     <button
                         onClick={() => onDelete(data.id)}
                         className="p-1 hover:bg-theme-bg-soft rounded text-theme-fg/40 hover:text-red-400"
