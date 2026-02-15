@@ -10,7 +10,8 @@ export function useWorkspace() {
         setActiveNoteId: selectNote,
         activeNote,
         addMemoToNote,
-        removeMemoFromNote
+        removeMemoFromNote,
+        addNote
     } = useNotes();
 
     const {
@@ -58,6 +59,7 @@ export function useWorkspace() {
         selectNote,
         memos,
         lastCreatedId,
+        addNote,
         createMemo,
         updateMemo,
         deleteMemo

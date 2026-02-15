@@ -11,6 +11,7 @@ function App() {
     activeNote,
     activeNoteId,
     selectNote,
+    addNote,
     memos,
     lastCreatedId,
     createMemo,
@@ -33,6 +34,7 @@ function App() {
         notes={notes}
         activeNoteId={activeNoteId}
         onSelectNote={selectNote}
+        onAddNote={addNote}
       />
 
       {/* Main Content */}

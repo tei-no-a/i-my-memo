@@ -5,9 +5,34 @@ interface SidebarProps {
     notes: Note[];
     activeNoteId: string;
     onSelectNote: (noteId: string) => void;
+    onAddNote: (title: string) => void;
 }
 
-export function Sidebar({ notes, activeNoteId, onSelectNote }: SidebarProps) {
+import { useState } from 'react';
+
+export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: SidebarProps) {
+    const [isCreating, setIsCreating] = useState(false);
+    const [newNoteTitle, setNewNoteTitle] = useState('');
+
+    const handleStartCreating = () => {
+        setIsCreating(true);
+        setNewNoteTitle('');
+    };
+
+    const handleCancelCreating = () => {
+        setIsCreating(false);
+        setNewNoteTitle('');
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && newNoteTitle.trim()) {
+            onAddNote(newNoteTitle.trim());
+            handleCancelCreating();
+        } else if (e.key === 'Escape') {
+            handleCancelCreating();
+        }
+    };
+
     const handleDefaultClick = () => {
         // Find default board, or just the first one if not explicit
         const defaultNote = notes.find(n => n.id === 'default') || notes[0];
@@ -47,12 +72,28 @@ export function Sidebar({ notes, activeNoteId, onSelectNote }: SidebarProps) {
                 ))}
 
                 <button
-                    className="w-full text-left px-3 py-2 rounded-lg text-theme-fg/60 hover:text-theme-accent hover:bg-theme-secondary/10 transition-colors flex items-center gap-3 mt-2 cursor-not-allowed opacity-50"
-                    title="Not implemented yet"
+                    onClick={handleStartCreating}
+                    className="w-full text-left px-3 py-2 rounded-lg text-theme-fg/60 hover:text-theme-accent hover:bg-theme-secondary/10 transition-colors flex items-center gap-3 mt-2"
+                    title="Create new note"
                 >
                     <Plus className="w-4 h-4" />
                     <span className="text-sm">New Note</span>
                 </button>
+
+                {isCreating && (
+                    <div className="px-3 py-2">
+                        <input
+                            autoFocus
+                            type="text"
+                            value={newNoteTitle}
+                            onChange={(e) => setNewNoteTitle(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            onBlur={handleCancelCreating}
+                            placeholder="Note title..."
+                            className="w-full bg-theme-bg border border-theme-border rounded px-2 py-1 text-sm text-theme-fg focus:outline-none focus:border-theme-accent"
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="p-4 border-t border-theme-border">
