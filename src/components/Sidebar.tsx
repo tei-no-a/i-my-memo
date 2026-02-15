@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Book, Plus, Settings, Trash2 } from 'lucide-react';
 import type { Note } from '../types';
 
@@ -8,29 +9,42 @@ interface SidebarProps {
     onAddNote: (title: string) => void;
 }
 
-import { useState } from 'react';
+function NoteInput({ onAdd, onCancel }: { onAdd: (title: string) => void, onCancel: () => void }) {
+    const [title, setTitle] = useState('');
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && title.trim()) {
+            onAdd(title.trim());
+        } else if (e.key === 'Escape') {
+            onCancel();
+        }
+    };
+
+    return (
+        <div className="px-3 py-2">
+            <input
+                autoFocus
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onBlur={onCancel}
+                placeholder="Note title..."
+                className="w-full bg-theme-bg border border-theme-border rounded px-2 py-1 text-sm text-theme-fg focus:outline-none focus:border-theme-accent"
+            />
+        </div>
+    );
+}
 
 export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: SidebarProps) {
     const [isCreating, setIsCreating] = useState(false);
-    const [newNoteTitle, setNewNoteTitle] = useState('');
 
-    const handleStartCreating = () => {
-        setIsCreating(true);
-        setNewNoteTitle('');
-    };
+    const handleStartCreating = () => setIsCreating(true);
+    const handleCancelCreating = () => setIsCreating(false);
 
-    const handleCancelCreating = () => {
+    const handleAddNote = (title: string) => {
+        onAddNote(title);
         setIsCreating(false);
-        setNewNoteTitle('');
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && newNoteTitle.trim()) {
-            onAddNote(newNoteTitle.trim());
-            handleCancelCreating();
-        } else if (e.key === 'Escape') {
-            handleCancelCreating();
-        }
     };
 
     const handleDefaultClick = () => {
@@ -80,18 +94,7 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
                 </button>
 
                 {isCreating && (
-                    <div className="px-3 py-2">
-                        <input
-                            autoFocus
-                            type="text"
-                            value={newNoteTitle}
-                            onChange={(e) => setNewNoteTitle(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            onBlur={handleCancelCreating}
-                            placeholder="Note title..."
-                            className="w-full bg-theme-bg border border-theme-border rounded px-2 py-1 text-sm text-theme-fg focus:outline-none focus:border-theme-accent"
-                        />
-                    </div>
+                    <NoteInput onAdd={handleAddNote} onCancel={handleCancelCreating} />
                 )}
             </div>
 

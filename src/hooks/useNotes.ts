@@ -1,55 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BaseDirectory, readTextFile, writeTextFile, exists } from '@tauri-apps/plugin-fs';
 import type { Note } from '../types';
-
-const NOTES_FILE = 'notes.json';
-
-const DEFAULT_NOTES: Note[] = [
-    {
-        id: 'board',
-        title: 'Board',
-        memoIds: []
-    },
-    {
-        id: 'trash',
-        title: 'Trash',
-        memoIds: []
-    },
-    {
-        id: '1739000000001',
-        title: 'Ideas',
-        categories: [],
-        memoIds: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: '1739000000002',
-        title: 'Work',
-        categories: [],
-        memoIds: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    }
-];
+import { NOTES_FILE, DEFAULT_NOTES, SPECIAL_NOTE_IDS } from '../constants';
+import { storage } from '../utils/storage';
 
 export function useNotes() {
     const [notes, setNotes] = useState<Note[]>([]);
-    const [activeNoteId, setActiveNoteId] = useState<string>('board');
+    const [activeNoteId, setActiveNoteId] = useState<string>(SPECIAL_NOTE_IDS.BOARD);
 
     // Load notes on mount
     useEffect(() => {
         const loadNotes = async () => {
             try {
-                const fileExists = await exists(NOTES_FILE, { baseDir: BaseDirectory.AppLocalData });
+                const fileExists = await storage.exists(NOTES_FILE);
 
                 if (!fileExists) {
                     // Initialize with default notes
-                    await writeTextFile(NOTES_FILE, JSON.stringify(DEFAULT_NOTES, null, 2), { baseDir: BaseDirectory.AppLocalData });
+                    await storage.writeJson(NOTES_FILE, DEFAULT_NOTES);
                     setNotes(DEFAULT_NOTES);
                 } else {
-                    const content = await readTextFile(NOTES_FILE, { baseDir: BaseDirectory.AppLocalData });
-                    setNotes(JSON.parse(content));
+                    const content = await storage.readJson<Note[]>(NOTES_FILE);
+                    setNotes(content || DEFAULT_NOTES);
                 }
             } catch (error) {
                 console.error('Failed to load notes:', error);
@@ -63,7 +33,7 @@ export function useNotes() {
 
     const saveNotes = useCallback(async (newNotes: Note[]) => {
         try {
-            await writeTextFile(NOTES_FILE, JSON.stringify(newNotes, null, 2), { baseDir: BaseDirectory.AppLocalData });
+            await storage.writeJson(NOTES_FILE, newNotes);
             setNotes(newNotes);
         } catch (error) {
             console.error('Failed to save notes:', error);
