@@ -6,15 +6,17 @@ const NOTES_FILE = 'notes.json';
 
 const DEFAULT_NOTES: Note[] = [
     {
-        id: 'default',
+        id: 'board',
         title: 'Board',
-        categories: [],
-        memoIds: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        memoIds: []
     },
     {
-        id: 'ideas',
+        id: 'trash',
+        title: 'Trash',
+        memoIds: []
+    },
+    {
+        id: '1739000000001',
         title: 'Ideas',
         categories: [],
         memoIds: [],
@@ -22,7 +24,7 @@ const DEFAULT_NOTES: Note[] = [
         updatedAt: new Date().toISOString()
     },
     {
-        id: 'work',
+        id: '1739000000002',
         title: 'Work',
         categories: [],
         memoIds: [],
@@ -33,7 +35,7 @@ const DEFAULT_NOTES: Note[] = [
 
 export function useNotes() {
     const [notes, setNotes] = useState<Note[]>([]);
-    const [activeNoteId, setActiveNoteId] = useState<string>('default');
+    const [activeNoteId, setActiveNoteId] = useState<string>('board');
 
     // Load notes on mount
     useEffect(() => {
@@ -98,6 +100,20 @@ export function useNotes() {
         await saveNotes(updatedNotes);
     }, [notes, saveNotes]);
 
+    const addNote = useCallback(async (title: string) => {
+        const newNote: Note = {
+            id: Date.now().toString(),
+            title,
+            categories: [],
+            memoIds: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        const updatedNotes = [...notes, newNote];
+        await saveNotes(updatedNotes);
+    }, [notes, saveNotes]);
+
     // Helper to get active note object
     const activeNote = notes.find(n => n.id === activeNoteId) || DEFAULT_NOTES[0];
 
@@ -107,6 +123,7 @@ export function useNotes() {
         setActiveNoteId,
         activeNote,
         addMemoToNote,
-        removeMemoFromNote
+        removeMemoFromNote,
+        addNote
     };
 }
