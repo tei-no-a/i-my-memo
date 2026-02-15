@@ -1,4 +1,4 @@
-import { Book, Plus, Settings } from 'lucide-react';
+import { Book, Plus, Settings, Trash2 } from 'lucide-react';
 import type { Note } from '../types';
 
 interface SidebarProps {
@@ -34,11 +34,7 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
     };
 
     const handleDefaultClick = () => {
-        // Find default board, or just the first one if not explicit
-        const defaultNote = notes.find(n => n.id === 'default') || notes[0];
-        if (defaultNote) {
-            onSelectNote(defaultNote.id);
-        }
+        onSelectNote('board');
     };
 
     return (
@@ -46,9 +42,10 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
             <div className="p-6">
                 <button
                     onClick={handleDefaultClick}
-                    className="text-2xl font-bold text-theme-fg tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity"
+                    className={`text-2xl font-bold tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity ${activeNoteId === 'board' ? 'text-theme-accent' : 'text-theme-fg'}`}
+                    title="Go to Board"
                 >
-                    <Book className="w-6 h-6 text-theme-accent" />
+                    <Book className="w-6 h-6" />
                     <span>i-my-memo</span>
                 </button>
             </div>
@@ -57,19 +54,21 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
                 <div className="text-xs font-semibold text-theme-fg/60 uppercase tracking-wider mb-2 px-2">
                     Notes
                 </div>
-                {notes.map((note) => (
-                    <button
-                        key={note.id}
-                        onClick={() => onSelectNote(note.id)}
-                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-3 ${activeNoteId === note.id
-                            ? 'bg-theme-secondary/30 text-theme-fg font-medium'
-                            : 'text-theme-fg/80 hover:bg-theme-secondary/10 hover:text-theme-fg'
-                            }`}
-                    >
-                        <span className="w-2 h-2 rounded-full bg-theme-accent opacity-70"></span>
-                        {note.title}
-                    </button>
-                ))}
+                {notes
+                    .filter(note => note.id !== 'board' && note.id !== 'trash')
+                    .map((note) => (
+                        <button
+                            key={note.id}
+                            onClick={() => onSelectNote(note.id)}
+                            className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-3 ${activeNoteId === note.id
+                                ? 'bg-theme-secondary/30 text-theme-fg font-medium'
+                                : 'text-theme-fg/80 hover:bg-theme-secondary/10 hover:text-theme-fg'
+                                }`}
+                        >
+                            <span className="w-2 h-2 rounded-full bg-theme-accent opacity-70"></span>
+                            {note.title}
+                        </button>
+                    ))}
 
                 <button
                     onClick={handleStartCreating}
@@ -96,8 +95,18 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
                 )}
             </div>
 
-            <div className="p-4 border-t border-theme-border">
-                <button className="flex items-center gap-2 text-sm text-theme-fg/60 hover:text-theme-fg transition-colors">
+            <div className="p-4 border-t border-theme-border space-y-1">
+                <button
+                    onClick={() => onSelectNote('trash')}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-3 ${activeNoteId === 'trash'
+                        ? 'bg-theme-secondary/30 text-theme-fg font-medium'
+                        : 'text-theme-fg/60 hover:text-theme-fg hover:bg-theme-secondary/10'
+                        }`}
+                >
+                    <Trash2 className="w-4 h-4" />
+                    <span className="text-sm">Trash</span>
+                </button>
+                <button className="flex items-center gap-2 text-sm text-theme-fg/60 hover:text-theme-fg transition-colors w-full px-3 py-2 rounded-lg hover:bg-theme-secondary/10">
                     <Settings className="w-4 h-4" />
                     <span>Settings</span>
                 </button>
