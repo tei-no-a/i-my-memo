@@ -22,7 +22,7 @@ export function Memo({ data, onUpdate, onDelete, autoFocus }: MemoProps) {
         transform,
         transition,
         isDragging
-    } = useSortable({ id: data.id });
+    } = useSortable({ id: data.id, data: { type: 'memo' } });
 
     const style = {
         transform: CSS.Transform.toString(transform),

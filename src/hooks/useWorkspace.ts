@@ -12,6 +12,7 @@ export function useWorkspace() {
         addMemoToNote,
         removeMemoFromNote,
         reorderMemos,
+        moveMemoToNote: moveMemoToNoteRaw,
         addNote
     } = useNotes();
 
@@ -53,6 +54,14 @@ export function useWorkspace() {
         }
     }, [deleteMemoFile, removeMemoFromNote, activeNoteId]);
 
+    const moveMemoToNote = useCallback(async (memoId: string, targetNoteId: string) => {
+        try {
+            await moveMemoToNoteRaw(activeNoteId, targetNoteId, memoId);
+        } catch (error) {
+            console.error("Failed to move memo", error);
+        }
+    }, [moveMemoToNoteRaw, activeNoteId]);
+
     return {
         notes,
         activeNote,
@@ -64,6 +73,7 @@ export function useWorkspace() {
         createMemo,
         updateMemo,
         deleteMemo,
-        reorderMemos
+        reorderMemos,
+        moveMemoToNote
     };
 }

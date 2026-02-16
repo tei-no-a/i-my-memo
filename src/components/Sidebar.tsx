@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useDroppable } from '@dnd-kit/core';
 import { Book, Plus, Settings, Trash2 } from 'lucide-react';
 import type { Note } from '../types';
 
@@ -33,6 +34,40 @@ function NoteInput({ onAdd, onCancel }: { onAdd: (title: string) => void, onCanc
                 className="w-full bg-theme-bg border border-theme-border rounded px-2 py-1 text-sm text-theme-fg focus:outline-none focus:border-theme-accent"
             />
         </div>
+    );
+}
+
+function DroppableNoteItem({
+    note,
+    isActive,
+}: {
+    note: Note;
+    isActive: boolean;
+    onSelect: () => void;
+}) {
+    const { setNodeRef, isOver } = useDroppable({
+        id: `note:${note.id}`,
+        data: { type: 'note', noteId: note.id },
+        disabled: isActive,
+    });
+
+    return (
+        <button
+            ref={setNodeRef}
+            className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-3
+                ${isActive
+                    ? 'bg-theme-secondary/30 text-theme-fg font-medium'
+                    : 'text-theme-fg/80 hover:bg-theme-secondary/10 hover:text-theme-fg'
+                }
+                ${isOver && !isActive
+                    ? 'ring-2 ring-theme-accent bg-theme-accent/10 scale-[1.02]'
+                    : ''
+                }
+            `}
+        >
+            <span className={`w-2 h-2 rounded-full transition-colors duration-200 ${isOver && !isActive ? 'bg-theme-accent' : 'bg-theme-accent opacity-70'}`}></span>
+            {note.title}
+        </button>
     );
 }
 
@@ -71,17 +106,13 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
                 {notes
                     .filter(note => note.id !== 'board' && note.id !== 'trash')
                     .map((note) => (
-                        <button
-                            key={note.id}
-                            onClick={() => onSelectNote(note.id)}
-                            className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-3 ${activeNoteId === note.id
-                                ? 'bg-theme-secondary/30 text-theme-fg font-medium'
-                                : 'text-theme-fg/80 hover:bg-theme-secondary/10 hover:text-theme-fg'
-                                }`}
-                        >
-                            <span className="w-2 h-2 rounded-full bg-theme-accent opacity-70"></span>
-                            {note.title}
-                        </button>
+                        <div key={note.id} onClick={() => onSelectNote(note.id)}>
+                            <DroppableNoteItem
+                                note={note}
+                                isActive={activeNoteId === note.id}
+                                onSelect={() => onSelectNote(note.id)}
+                            />
+                        </div>
                     ))}
 
                 <button
