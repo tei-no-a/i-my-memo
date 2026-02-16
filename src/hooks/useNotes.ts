@@ -14,7 +14,6 @@ export function useNotes() {
                 const fileExists = await storage.exists(NOTES_FILE);
 
                 if (!fileExists) {
-                    // Initialize with default notes
                     await storage.writeJson(NOTES_FILE, DEFAULT_NOTES);
                     setNotes(DEFAULT_NOTES);
                 } else {
@@ -23,7 +22,6 @@ export function useNotes() {
                 }
             } catch (error) {
                 console.error('Failed to load notes:', error);
-                // Fallback to defaults to prevent app crash
                 setNotes(DEFAULT_NOTES);
             }
         };
@@ -40,35 +38,55 @@ export function useNotes() {
         }
     }, []);
 
-    const addMemoToNote = useCallback(async (noteId: string, memoId: string) => {
-        const updatedNotes = notes.map(note => {
-            if (note.id === noteId) {
-                return {
-                    ...note,
-                    memoIds: [...note.memoIds, memoId], // Add to end
-                    updatedAt: new Date().toISOString()
-                };
-            }
-            return note;
-        });
-
+    // Helper: update a single note by ID with a partial update
+    const updateNote = useCallback(async (
+        noteId: string,
+        updater: (note: Note) => Partial<Note>
+    ) => {
+        const updatedNotes = notes.map(note =>
+            note.id === noteId
+                ? { ...note, ...updater(note), updatedAt: new Date().toISOString() }
+                : note
+        );
         await saveNotes(updatedNotes);
     }, [notes, saveNotes]);
+
+    // Helper: update multiple notes at once (atomic save)
+    const updateMultipleNotes = useCallback(async (
+        updates: Array<{ noteId: string; updater: (note: Note) => Partial<Note> }>
+    ) => {
+        const updateMap = new Map(updates.map(u => [u.noteId, u.updater]));
+        const updatedNotes = notes.map(note => {
+            const updater = updateMap.get(note.id);
+            return updater
+                ? { ...note, ...updater(note), updatedAt: new Date().toISOString() }
+                : note;
+        });
+        await saveNotes(updatedNotes);
+    }, [notes, saveNotes]);
+
+    const addMemoToNote = useCallback(async (noteId: string, memoId: string) => {
+        await updateNote(noteId, note => ({
+            memoIds: [...note.memoIds, memoId]
+        }));
+    }, [updateNote]);
 
     const removeMemoFromNote = useCallback(async (noteId: string, memoId: string) => {
-        const updatedNotes = notes.map(note => {
-            if (note.id === noteId) {
-                return {
-                    ...note,
-                    memoIds: note.memoIds.filter(id => id !== memoId),
-                    updatedAt: new Date().toISOString()
-                };
-            }
-            return note;
-        });
+        await updateNote(noteId, note => ({
+            memoIds: note.memoIds.filter(id => id !== memoId)
+        }));
+    }, [updateNote]);
 
-        await saveNotes(updatedNotes);
-    }, [notes, saveNotes]);
+    const reorderMemos = useCallback(async (noteId: string, newMemoIds: string[]) => {
+        await updateNote(noteId, () => ({ memoIds: newMemoIds }));
+    }, [updateNote]);
+
+    const moveMemoToNote = useCallback(async (fromNoteId: string, toNoteId: string, memoId: string) => {
+        await updateMultipleNotes([
+            { noteId: fromNoteId, updater: note => ({ memoIds: note.memoIds.filter(id => id !== memoId) }) },
+            { noteId: toNoteId, updater: note => ({ memoIds: [...note.memoIds, memoId] }) },
+        ]);
+    }, [updateMultipleNotes]);
 
     const addNote = useCallback(async (title: string) => {
         const newNote: Note = {
@@ -79,49 +97,9 @@ export function useNotes() {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
-
-        const updatedNotes = [...notes, newNote];
-        await saveNotes(updatedNotes);
+        await saveNotes([...notes, newNote]);
     }, [notes, saveNotes]);
 
-    const reorderMemos = useCallback(async (noteId: string, newMemoIds: string[]) => {
-        const updatedNotes = notes.map(note => {
-            if (note.id === noteId) {
-                return {
-                    ...note,
-                    memoIds: newMemoIds,
-                    updatedAt: new Date().toISOString()
-                };
-            }
-            return note;
-        });
-
-        await saveNotes(updatedNotes);
-    }, [notes, saveNotes]);
-
-    const moveMemoToNote = useCallback(async (fromNoteId: string, toNoteId: string, memoId: string) => {
-        const updatedNotes = notes.map(note => {
-            if (note.id === fromNoteId) {
-                return {
-                    ...note,
-                    memoIds: note.memoIds.filter(id => id !== memoId),
-                    updatedAt: new Date().toISOString()
-                };
-            }
-            if (note.id === toNoteId) {
-                return {
-                    ...note,
-                    memoIds: [...note.memoIds, memoId],
-                    updatedAt: new Date().toISOString()
-                };
-            }
-            return note;
-        });
-
-        await saveNotes(updatedNotes);
-    }, [notes, saveNotes]);
-
-    // Helper to get active note object
     const activeNote = notes.find(n => n.id === activeNoteId) || DEFAULT_NOTES[0];
 
     return {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { Book, Plus, Settings, Trash2 } from 'lucide-react';
+import { DND_PREFIX, DND_ITEM_TYPES } from '../constants';
 import type { Note } from '../types';
 
 interface SidebarProps {
@@ -40,20 +41,22 @@ function NoteInput({ onAdd, onCancel }: { onAdd: (title: string) => void, onCanc
 function DroppableNoteItem({
     note,
     isActive,
+    onSelect,
 }: {
     note: Note;
     isActive: boolean;
     onSelect: () => void;
 }) {
     const { setNodeRef, isOver } = useDroppable({
-        id: `note:${note.id}`,
-        data: { type: 'note', noteId: note.id },
+        id: `${DND_PREFIX.NOTE}${note.id}`,
+        data: { type: DND_ITEM_TYPES.NOTE, noteId: note.id },
         disabled: isActive,
     });
 
     return (
         <button
             ref={setNodeRef}
+            onClick={onSelect}
             className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-3
                 ${isActive
                     ? 'bg-theme-secondary/30 text-theme-fg font-medium'
@@ -82,15 +85,11 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
         setIsCreating(false);
     };
 
-    const handleDefaultClick = () => {
-        onSelectNote('board');
-    };
-
     return (
         <aside className="w-64 bg-theme-bg-soft h-full flex flex-col border-r border-theme-border flex-shrink-0">
             <div className="p-6">
                 <button
-                    onClick={handleDefaultClick}
+                    onClick={() => onSelectNote('board')}
                     className={`text-2xl font-bold tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity ${activeNoteId === 'board' ? 'text-theme-accent' : 'text-theme-fg'}`}
                     title="Go to Board"
                 >
@@ -106,13 +105,12 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
                 {notes
                     .filter(note => note.id !== 'board' && note.id !== 'trash')
                     .map((note) => (
-                        <div key={note.id} onClick={() => onSelectNote(note.id)}>
-                            <DroppableNoteItem
-                                note={note}
-                                isActive={activeNoteId === note.id}
-                                onSelect={() => onSelectNote(note.id)}
-                            />
-                        </div>
+                        <DroppableNoteItem
+                            key={note.id}
+                            note={note}
+                            isActive={activeNoteId === note.id}
+                            onSelect={() => onSelectNote(note.id)}
+                        />
                     ))}
 
                 <button
@@ -148,3 +146,4 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
         </aside>
     );
 }
+

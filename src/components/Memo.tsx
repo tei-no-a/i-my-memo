@@ -2,6 +2,7 @@ import { GripHorizontal, MoreVertical, X } from 'lucide-react';
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { DND_ITEM_TYPES } from '../constants';
 import type { MemoData } from '../types';
 
 interface MemoProps {
@@ -22,7 +23,7 @@ export function Memo({ data, onUpdate, onDelete, autoFocus }: MemoProps) {
         transform,
         transition,
         isDragging
-    } = useSortable({ id: data.id, data: { type: 'memo' } });
+    } = useSortable({ id: data.id, data: { type: DND_ITEM_TYPES.MEMO } });
 
     const style = {
         transform: CSS.Transform.toString(transform),

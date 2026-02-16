@@ -63,17 +63,21 @@ export function useWorkspace() {
     }, [moveMemoToNoteRaw, activeNoteId]);
 
     return {
+        // Notes
         notes,
         activeNote,
         activeNoteId,
         selectNote,
+        addNote,
+        // Memos
         memos,
         lastCreatedId,
-        addNote,
         createMemo,
         updateMemo,
         deleteMemo,
+        // DnD operations
         reorderMemos,
-        moveMemoToNote
+        moveMemoToNote,
     };
 }
+
