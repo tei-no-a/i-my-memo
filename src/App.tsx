@@ -15,6 +15,7 @@ function App() {
     activeNoteId,
     selectNote,
     addNote,
+    deleteNote,
     memos,
     lastCreatedId,
     createMemo,
@@ -32,8 +33,6 @@ function App() {
     onDragCancel,
   } = useDragAndDrop({ memos, activeNote, activeNoteId, reorderMemos, moveMemoToNote });
 
-  const { deleteNote } = useWorkspace();
-
   const isSpecialNote = activeNoteId === 'board' || activeNoteId === 'trash';
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -43,8 +42,6 @@ function App() {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [memos, lastCreatedId, activeNote]);
-
-  console.log('[App] Render. activeNoteId:', activeNoteId, 'notes count:', notes.length, 'note IDs:', notes.map(n => n.id));
 
   return (
     <DndContext

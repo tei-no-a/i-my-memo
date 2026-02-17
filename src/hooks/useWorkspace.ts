@@ -63,15 +63,11 @@ export function useWorkspace() {
     }, [deleteMemoFile, removeMemoFromNote, activeNoteId, moveMemoToNoteRaw]);
 
     const deleteNote = useCallback(async (noteId: string) => {
-        console.log('[useWorkspace] deleteNote called for:', noteId);
         try {
-            await deleteNoteRaw(noteId);
-            console.log('[useWorkspace] Note deleted. Scheduling switch to board...');
-            // Force separate render cycle
-            setTimeout(() => {
-                console.log('[useWorkspace] Switching to board (delayed)');
+            const deleted = await deleteNoteRaw(noteId);
+            if (deleted) {
                 selectNote(SPECIAL_NOTE_IDS.BOARD);
-            }, 0);
+            }
         } catch (error) {
             console.error("Failed to delete note", error);
         }

@@ -3,6 +3,14 @@ import type { Note } from '../types';
 import { NOTES_FILE, DEFAULT_NOTES, SPECIAL_NOTE_IDS } from '../constants';
 import { storage } from '../utils/storage';
 
+/**
+ * notes の状態管理と永続化を行うフック。
+ *
+ * 設計方針:
+ * - 全ての更新関数で setNotes(prev => ...) の関数型更新を使用し、
+ *   常に最新の state を参照する（ステールクロージャ問題の防止）
+ * - ファイル書き込みは更新後の値で実行する
+ */
 export function useNotes() {
     const [notes, setNotes] = useState<Note[]>([]);
     const [activeNoteId, setActiveNoteId] = useState<string>(SPECIAL_NOTE_IDS.BOARD);
@@ -29,18 +37,10 @@ export function useNotes() {
         loadNotes();
     }, []);
 
-    useEffect(() => {
-        console.log('[useNotes] notes state updated. count:', notes.length, 'IDs:', notes.map(n => n.id));
-    }, [notes]);
-
-    useEffect(() => {
-        console.log('[useNotes] activeNoteId updated:', activeNoteId);
-    }, [activeNoteId]);
-
-    const saveNotes = useCallback(async (newNotes: Note[]) => {
+    // ファイルへの永続化のみを行うヘルパー
+    const persistNotes = useCallback(async (updatedNotes: Note[]) => {
         try {
-            await storage.writeJson(NOTES_FILE, newNotes);
-            setNotes(newNotes);
+            await storage.writeJson(NOTES_FILE, updatedNotes);
         } catch (error) {
             console.error('Failed to save notes:', error);
         }
@@ -51,27 +51,35 @@ export function useNotes() {
         noteId: string,
         updater: (note: Note) => Partial<Note>
     ) => {
-        const updatedNotes = notes.map(note =>
-            note.id === noteId
-                ? { ...note, ...updater(note), updatedAt: new Date().toISOString() }
-                : note
-        );
-        await saveNotes(updatedNotes);
-    }, [notes, saveNotes]);
+        let result: Note[] = [];
+        setNotes(prev => {
+            result = prev.map(note =>
+                note.id === noteId
+                    ? { ...note, ...updater(note), updatedAt: new Date().toISOString() }
+                    : note
+            );
+            return result;
+        });
+        await persistNotes(result);
+    }, [persistNotes]);
 
     // Helper: update multiple notes at once (atomic save)
     const updateMultipleNotes = useCallback(async (
         updates: Array<{ noteId: string; updater: (note: Note) => Partial<Note> }>
     ) => {
+        let result: Note[] = [];
         const updateMap = new Map(updates.map(u => [u.noteId, u.updater]));
-        const updatedNotes = notes.map(note => {
-            const updater = updateMap.get(note.id);
-            return updater
-                ? { ...note, ...updater(note), updatedAt: new Date().toISOString() }
-                : note;
+        setNotes(prev => {
+            result = prev.map(note => {
+                const updater = updateMap.get(note.id);
+                return updater
+                    ? { ...note, ...updater(note), updatedAt: new Date().toISOString() }
+                    : note;
+            });
+            return result;
         });
-        await saveNotes(updatedNotes);
-    }, [notes, saveNotes]);
+        await persistNotes(result);
+    }, [persistNotes]);
 
     const addMemoToNote = useCallback(async (noteId: string, memoId: string) => {
         await updateNote(noteId, note => ({
@@ -105,37 +113,45 @@ export function useNotes() {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
-        await saveNotes([...notes, newNote]);
-    }, [notes, saveNotes]);
+        let result: Note[] = [];
+        setNotes(prev => {
+            result = [...prev, newNote];
+            return result;
+        });
+        await persistNotes(result);
+    }, [persistNotes]);
 
-    const deleteNote = useCallback(async (noteId: string) => {
-        console.log('[useNotes] deleteNote called with:', noteId);
-        console.log('[useNotes] Current notes IDs:', notes.map(n => n.id));
+    const deleteNote = useCallback(async (noteId: string): Promise<boolean> => {
         // Prevent deleting special notes
         if (noteId === SPECIAL_NOTE_IDS.BOARD || noteId === SPECIAL_NOTE_IDS.TRASH) {
-            console.log('[useNotes] Attempted to delete special note, aborting.');
-            return;
+            return false;
         }
 
-        const targetNote = notes.find(n => n.id === noteId);
-        if (!targetNote) {
-            console.log('[useNotes] Target note not found:', noteId);
-            return;
+        let result: Note[] = [];
+        let found = false;
+
+        setNotes(prev => {
+            const targetNote = prev.find(n => n.id === noteId);
+            if (!targetNote) {
+                result = prev;
+                return prev;
+            }
+            found = true;
+            // Move memos from the deleted note to the Board
+            result = prev
+                .filter(n => n.id !== noteId)
+                .map(n => n.id === SPECIAL_NOTE_IDS.BOARD
+                    ? { ...n, memoIds: [...n.memoIds, ...targetNote.memoIds], updatedAt: new Date().toISOString() }
+                    : n
+                );
+            return result;
+        });
+
+        if (found) {
+            await persistNotes(result);
         }
-
-        console.log('[useNotes] Deleting note, moving memos to board. Target memos:', targetNote.memoIds);
-
-        // Move memos from the deleted note to the Board
-        const updatedNotes = notes
-            .filter(n => n.id !== noteId)
-            .map(n => n.id === SPECIAL_NOTE_IDS.BOARD
-                ? { ...n, memoIds: [...n.memoIds, ...targetNote.memoIds], updatedAt: new Date().toISOString() }
-                : n
-            );
-
-        console.log('[useNotes] Saving updated notes:', updatedNotes);
-        await saveNotes(updatedNotes);
-    }, [notes, saveNotes]);
+        return found;
+    }, [persistNotes]);
 
     const activeNote = notes.find(n => n.id === activeNoteId) || DEFAULT_NOTES[0];
 
