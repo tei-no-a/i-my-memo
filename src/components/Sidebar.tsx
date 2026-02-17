@@ -75,6 +75,7 @@ function DroppableNoteItem({
 }
 
 export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: SidebarProps) {
+    console.log('[Sidebar] Render. notes count:', notes.length);
     const [isCreating, setIsCreating] = useState(false);
 
     const handleStartCreating = () => setIsCreating(true);

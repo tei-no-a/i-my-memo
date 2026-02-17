@@ -29,6 +29,14 @@ export function useNotes() {
         loadNotes();
     }, []);
 
+    useEffect(() => {
+        console.log('[useNotes] notes state updated. count:', notes.length, 'IDs:', notes.map(n => n.id));
+    }, [notes]);
+
+    useEffect(() => {
+        console.log('[useNotes] activeNoteId updated:', activeNoteId);
+    }, [activeNoteId]);
+
     const saveNotes = useCallback(async (newNotes: Note[]) => {
         try {
             await storage.writeJson(NOTES_FILE, newNotes);
@@ -100,6 +108,35 @@ export function useNotes() {
         await saveNotes([...notes, newNote]);
     }, [notes, saveNotes]);
 
+    const deleteNote = useCallback(async (noteId: string) => {
+        console.log('[useNotes] deleteNote called with:', noteId);
+        console.log('[useNotes] Current notes IDs:', notes.map(n => n.id));
+        // Prevent deleting special notes
+        if (noteId === SPECIAL_NOTE_IDS.BOARD || noteId === SPECIAL_NOTE_IDS.TRASH) {
+            console.log('[useNotes] Attempted to delete special note, aborting.');
+            return;
+        }
+
+        const targetNote = notes.find(n => n.id === noteId);
+        if (!targetNote) {
+            console.log('[useNotes] Target note not found:', noteId);
+            return;
+        }
+
+        console.log('[useNotes] Deleting note, moving memos to board. Target memos:', targetNote.memoIds);
+
+        // Move memos from the deleted note to the Board
+        const updatedNotes = notes
+            .filter(n => n.id !== noteId)
+            .map(n => n.id === SPECIAL_NOTE_IDS.BOARD
+                ? { ...n, memoIds: [...n.memoIds, ...targetNote.memoIds], updatedAt: new Date().toISOString() }
+                : n
+            );
+
+        console.log('[useNotes] Saving updated notes:', updatedNotes);
+        await saveNotes(updatedNotes);
+    }, [notes, saveNotes]);
+
     const activeNote = notes.find(n => n.id === activeNoteId) || DEFAULT_NOTES[0];
 
     return {
@@ -111,6 +148,7 @@ export function useNotes() {
         removeMemoFromNote,
         reorderMemos,
         moveMemoToNote,
-        addNote
+        addNote,
+        deleteNote
     };
 }

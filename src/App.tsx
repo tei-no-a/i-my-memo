@@ -32,6 +32,10 @@ function App() {
     onDragCancel,
   } = useDragAndDrop({ memos, activeNote, activeNoteId, reorderMemos, moveMemoToNote });
 
+  const { deleteNote } = useWorkspace();
+
+  const isSpecialNote = activeNoteId === 'board' || activeNoteId === 'trash';
+
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,6 +43,8 @@ function App() {
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [memos, lastCreatedId, activeNote]);
+
+  console.log('[App] Render. activeNoteId:', activeNoteId, 'notes count:', notes.length, 'note IDs:', notes.map(n => n.id));
 
   return (
     <DndContext
@@ -56,7 +62,11 @@ function App() {
         />
 
         <div className="flex-1 flex flex-col h-full relative">
-          <Header title={activeNote.title} />
+          <Header
+            title={activeNote.title}
+            canDelete={!isSpecialNote}
+            onDeleteNote={() => deleteNote(activeNoteId)}
+          />
 
           <main className="flex-1 overflow-y-auto p-6 md:p-8">
             <div className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch pb-24">
