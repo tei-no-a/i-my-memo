@@ -15,6 +15,7 @@ export function useWorkspace() {
         reorderMemos,
         moveMemoToNote: moveMemoToNoteRaw,
         addNote,
+        renameNote,
         deleteNote: deleteNoteRaw
     } = useNotes();
 
@@ -88,6 +89,7 @@ export function useWorkspace() {
         activeNoteId,
         selectNote,
         addNote,
+        renameNote,
         // Memos
         memos,
         lastCreatedId,

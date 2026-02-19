@@ -15,6 +15,7 @@ function App() {
     activeNoteId,
     selectNote,
     addNote,
+    renameNote,
     deleteNote,
     memos,
     lastCreatedId,
@@ -62,7 +63,9 @@ function App() {
           <Header
             title={activeNote.title}
             canDelete={!isSpecialNote}
+            canRename={!isSpecialNote}
             onDeleteNote={() => deleteNote(activeNoteId)}
+            onRenameNote={(newTitle) => renameNote(activeNoteId, newTitle)}
           />
 
           <main className="flex-1 overflow-y-auto p-6 md:p-8">

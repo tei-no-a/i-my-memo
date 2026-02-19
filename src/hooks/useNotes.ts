@@ -121,6 +121,12 @@ export function useNotes() {
         await persistNotes(result);
     }, [persistNotes]);
 
+    const renameNote = useCallback(async (noteId: string, newTitle: string) => {
+        const trimmed = newTitle.trim();
+        if (!trimmed) return;
+        await updateNote(noteId, () => ({ title: trimmed }));
+    }, [updateNote]);
+
     const deleteNote = useCallback(async (noteId: string): Promise<boolean> => {
         // Prevent deleting special notes
         if (noteId === SPECIAL_NOTE_IDS.BOARD || noteId === SPECIAL_NOTE_IDS.TRASH) {
@@ -165,6 +171,7 @@ export function useNotes() {
         reorderMemos,
         moveMemoToNote,
         addNote,
+        renameNote,
         deleteNote
     };
 }
