@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Menu, Search, Filter, MoreVertical, Trash2, Pencil } from 'lucide-react';
+import { Menu, MoreVertical, Trash2, Pencil } from 'lucide-react';
 
 interface HeaderProps {
     title: string;
