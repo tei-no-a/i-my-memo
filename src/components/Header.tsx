@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { Menu, MoreVertical, Trash2, Pencil } from 'lucide-react';
+import { DropdownMenu } from './DropdownMenu';
 
 interface HeaderProps {
     title: string;
@@ -13,7 +14,6 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(title);
-    const menuRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // title が外部から変わったとき（別ノートへ切り替え）に同期
@@ -28,20 +28,9 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
         }
     }, [isEditing]);
 
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+    const closeMenu = useCallback(() => setIsMenuOpen(false), []);
 
     const handleDelete = () => {
-        console.log('[Header] handleDelete clicked');
         if (onDeleteNote) {
             onDeleteNote();
             setIsMenuOpen(false);
@@ -111,7 +100,7 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
             </div>
 
             <div className="flex items-center gap-3">
-                <div className="relative" ref={menuRef}>
+                <div className="relative">
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className={`p-2 rounded-full transition-colors ${isMenuOpen ? 'bg-theme-bg-soft text-theme-fg' : 'text-theme-fg/60 hover:bg-theme-bg-soft hover:text-theme-fg'}`}
@@ -119,33 +108,31 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                         <MoreVertical className="w-5 h-5" />
                     </button>
 
-                    {isMenuOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-theme-border/50 py-1 z-20 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
-                            {canRename && (
-                                <button
-                                    onClick={() => { startEditing(); setIsMenuOpen(false); }}
-                                    className="w-full text-left px-4 py-2.5 text-sm text-theme-fg hover:bg-theme-bg-soft flex items-center gap-2 transition-colors"
-                                >
-                                    <Pencil className="w-4 h-4" />
-                                    Rename
-                                </button>
-                            )}
-                            {canDelete && (
-                                <button
-                                    onClick={handleDelete}
-                                    className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                    Delete Note
-                                </button>
-                            )}
-                            {!canDelete && !canRename && (
-                                <div className="px-4 py-2 text-xs text-theme-fg/40 text-center">
-                                    No actions available
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    <DropdownMenu isOpen={isMenuOpen} onClose={closeMenu}>
+                        {canRename && (
+                            <button
+                                onClick={() => { startEditing(); setIsMenuOpen(false); }}
+                                className="w-full text-left px-4 py-2.5 text-sm text-theme-fg hover:bg-theme-bg-soft flex items-center gap-2 transition-colors"
+                            >
+                                <Pencil className="w-4 h-4" />
+                                Rename
+                            </button>
+                        )}
+                        {canDelete && (
+                            <button
+                                onClick={handleDelete}
+                                className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Delete Note
+                            </button>
+                        )}
+                        {!canDelete && !canRename && (
+                            <div className="px-4 py-2 text-xs text-theme-fg/40 text-center">
+                                No actions available
+                            </div>
+                        )}
+                    </DropdownMenu>
                 </div>
             </div>
         </header>

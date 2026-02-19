@@ -1,4 +1,4 @@
-import type { Note } from './types';
+import type { Note } from '../types';
 
 export const NOTES_FILE = 'notes.json';
 export const MEMO_DIR = 'memos';
@@ -6,16 +6,6 @@ export const MEMO_DIR = 'memos';
 export const SPECIAL_NOTE_IDS = {
     BOARD: 'board',
     TRASH: 'trash',
-} as const;
-
-// Drag & Drop identifiers
-export const DND_PREFIX = {
-    NOTE: 'note:',
-} as const;
-
-export const DND_ITEM_TYPES = {
-    MEMO: 'memo',
-    NOTE: 'note',
 } as const;
 
 export const DEFAULT_NOTES: Note[] = [

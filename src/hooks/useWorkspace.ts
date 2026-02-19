@@ -63,14 +63,10 @@ export function useWorkspace() {
         }
     }, [deleteMemoFile, removeMemoFromNote, activeNoteId, moveMemoToNoteRaw]);
 
-    const deleteNote = useCallback(async (noteId: string) => {
-        try {
-            const deleted = await deleteNoteRaw(noteId);
-            if (deleted) {
-                selectNote(SPECIAL_NOTE_IDS.BOARD);
-            }
-        } catch (error) {
-            console.error("Failed to delete note", error);
+    const deleteNote = useCallback((noteId: string) => {
+        const deleted = deleteNoteRaw(noteId);
+        if (deleted) {
+            selectNote(SPECIAL_NOTE_IDS.BOARD);
         }
     }, [deleteNoteRaw, selectNote]);
 

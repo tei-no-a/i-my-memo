@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useDroppable } from '@dnd-kit/core';
 import { Book, Plus, Settings, Trash2 } from 'lucide-react';
-import { DND_PREFIX, DND_ITEM_TYPES } from '../constants';
+import { SPECIAL_NOTE_IDS } from '../constants';
+import { NoteInput } from './NoteInput';
+import { DroppableNoteItem } from './DroppableNoteItem';
 import type { Note } from '../types';
 
 interface SidebarProps {
@@ -11,71 +12,7 @@ interface SidebarProps {
     onAddNote: (title: string) => void;
 }
 
-function NoteInput({ onAdd, onCancel }: { onAdd: (title: string) => void, onCancel: () => void }) {
-    const [title, setTitle] = useState('');
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && title.trim()) {
-            onAdd(title.trim());
-        } else if (e.key === 'Escape') {
-            onCancel();
-        }
-    };
-
-    return (
-        <div className="px-3 py-2">
-            <input
-                autoFocus
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={onCancel}
-                placeholder="Note title..."
-                className="w-full bg-theme-bg border border-theme-border rounded px-2 py-1 text-sm text-theme-fg focus:outline-none focus:border-theme-accent"
-            />
-        </div>
-    );
-}
-
-function DroppableNoteItem({
-    note,
-    isActive,
-    onSelect,
-}: {
-    note: Note;
-    isActive: boolean;
-    onSelect: () => void;
-}) {
-    const { setNodeRef, isOver } = useDroppable({
-        id: `${DND_PREFIX.NOTE}${note.id}`,
-        data: { type: DND_ITEM_TYPES.NOTE, noteId: note.id },
-        disabled: isActive,
-    });
-
-    return (
-        <button
-            ref={setNodeRef}
-            onClick={onSelect}
-            className={`w-full text-left px-3 py-2 rounded-lg transition-all duration-200 flex items-center gap-3
-                ${isActive
-                    ? 'bg-theme-secondary/30 text-theme-fg font-medium'
-                    : 'text-theme-fg/80 hover:bg-theme-secondary/10 hover:text-theme-fg'
-                }
-                ${isOver && !isActive
-                    ? 'ring-2 ring-theme-accent bg-theme-accent/10 scale-[1.02]'
-                    : ''
-                }
-            `}
-        >
-            <span className={`w-2 h-2 rounded-full transition-colors duration-200 ${isOver && !isActive ? 'bg-theme-accent' : 'bg-theme-accent opacity-70'}`}></span>
-            {note.title}
-        </button>
-    );
-}
-
 export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: SidebarProps) {
-    console.log('[Sidebar] Render. notes count:', notes.length);
     const [isCreating, setIsCreating] = useState(false);
 
     const handleStartCreating = () => setIsCreating(true);
@@ -90,8 +27,8 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
         <aside className="w-64 bg-theme-bg-soft h-full flex flex-col border-r border-theme-border flex-shrink-0">
             <div className="p-6">
                 <button
-                    onClick={() => onSelectNote('board')}
-                    className={`text-2xl font-bold tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity ${activeNoteId === 'board' ? 'text-theme-accent' : 'text-theme-fg'}`}
+                    onClick={() => onSelectNote(SPECIAL_NOTE_IDS.BOARD)}
+                    className={`text-2xl font-bold tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity ${activeNoteId === SPECIAL_NOTE_IDS.BOARD ? 'text-theme-accent' : 'text-theme-fg'}`}
                     title="Go to Board"
                 >
                     <Book className="w-6 h-6" />
@@ -104,7 +41,7 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
                     Notes
                 </div>
                 {notes
-                    .filter(note => note.id !== 'board' && note.id !== 'trash')
+                    .filter(note => note.id !== SPECIAL_NOTE_IDS.BOARD && note.id !== SPECIAL_NOTE_IDS.TRASH)
                     .map((note) => (
                         <DroppableNoteItem
                             key={note.id}
@@ -130,8 +67,8 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
 
             <div className="p-4 border-t border-theme-border space-y-1">
                 <button
-                    onClick={() => onSelectNote('trash')}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-3 ${activeNoteId === 'trash'
+                    onClick={() => onSelectNote(SPECIAL_NOTE_IDS.TRASH)}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-3 ${activeNoteId === SPECIAL_NOTE_IDS.TRASH
                         ? 'bg-theme-secondary/30 text-theme-fg font-medium'
                         : 'text-theme-fg/60 hover:text-theme-fg hover:bg-theme-secondary/10'
                         }`}
@@ -147,4 +84,3 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
         </aside>
     );
 }
-
