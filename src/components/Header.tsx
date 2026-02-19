@@ -111,18 +111,6 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
             </div>
 
             <div className="flex items-center gap-3">
-                <div className="relative group">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-theme-fg/40 group-focus-within:text-theme-accent transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Search memos..."
-                        className="pl-9 pr-4 py-1.5 rounded-full bg-theme-bg-soft border border-transparent focus:border-theme-accent/50 focus:bg-white focus:outline-none text-sm w-48 transition-all"
-                    />
-                </div>
-                <button className="p-2 rounded-full hover:bg-theme-bg-soft text-theme-fg/60 hover:text-theme-fg transition-colors">
-                    <Filter className="w-5 h-5" />
-                </button>
-
                 <div className="relative" ref={menuRef}>
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
