@@ -1,4 +1,5 @@
 import { useMemo, useCallback } from 'react';
+import { useCategories } from './useCategories';
 import { useMemos } from './useMemos';
 import { useNotes } from './useNotes';
 import { SPECIAL_NOTE_IDS } from '../constants';
@@ -16,8 +17,13 @@ export function useWorkspace() {
         moveMemoToNote: moveMemoToNoteRaw,
         addNote,
         renameNote,
+        toggleCategory,
         deleteNote: deleteNoteRaw
     } = useNotes();
+
+    const {
+        categories
+    } = useCategories();
 
     const {
         memos: allMemos,
@@ -86,6 +92,9 @@ export function useWorkspace() {
         selectNote,
         addNote,
         renameNote,
+        toggleCategory,
+        // Categories
+        categories,
         // Memos
         memos,
         lastCreatedId,

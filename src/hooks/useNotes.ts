@@ -117,6 +117,16 @@ export function useNotes() {
         updateNote(noteId, () => ({ title: trimmed }));
     }, [updateNote]);
 
+    const toggleCategory = useCallback((noteId: string, categoryId: string) => {
+        updateNote(noteId, (note) => {
+            const currentCategories = note.categories || [];
+            const newCategories = currentCategories.includes(categoryId)
+                ? currentCategories.filter(id => id !== categoryId)
+                : [...currentCategories, categoryId];
+            return { categories: newCategories };
+        });
+    }, [updateNote]);
+
     const deleteNote = useCallback((noteId: string): boolean => {
         // Prevent deleting special notes
         if (noteId === SPECIAL_NOTE_IDS.BOARD || noteId === SPECIAL_NOTE_IDS.TRASH) {
@@ -154,6 +164,7 @@ export function useNotes() {
         moveMemoToNote,
         addNote,
         renameNote,
+        toggleCategory,
         deleteNote
     };
 }
