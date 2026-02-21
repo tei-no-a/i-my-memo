@@ -22,7 +22,10 @@ export function useWorkspace() {
     } = useNotes();
 
     const {
-        categories
+        categories,
+        addCategory,
+        updateCategory,
+        deleteCategory: deleteCategoryRaw
     } = useCategories();
 
     const {
@@ -95,6 +98,9 @@ export function useWorkspace() {
         toggleCategory,
         // Categories
         categories,
+        addCategory,
+        updateCategory,
+        deleteCategory: deleteCategoryRaw,
         // Memos
         memos,
         lastCreatedId,

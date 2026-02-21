@@ -15,3 +15,12 @@ export const CATEGORY_COLOR_MAP: Record<CategoryColor, string> = {
     emerald: 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200',
     violet: 'bg-violet-100 text-violet-800 border-violet-200 hover:bg-violet-200',
 };
+
+// Settings Modalの色選択や一覧表示などに利用する表示用カラースタイルの定義
+export const CATEGORY_COLOR_DISPLAY_MAP: Record<CategoryColor, { bg: string; ring: string }> = {
+    rose: { bg: 'bg-rose-400', ring: 'ring-rose-300' },
+    sky: { bg: 'bg-sky-400', ring: 'ring-sky-300' },
+    amber: { bg: 'bg-amber-400', ring: 'ring-amber-300' },
+    emerald: { bg: 'bg-emerald-400', ring: 'ring-emerald-300' },
+    violet: { bg: 'bg-violet-400', ring: 'ring-violet-300' },
+};

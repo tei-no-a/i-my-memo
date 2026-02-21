@@ -8,8 +8,12 @@ import { FAB } from './components/FAB';
 import { CategoryBar } from './components/CategoryBar';
 import { useWorkspace } from './hooks/useWorkspace';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
+import { useState } from 'react';
+import { SettingsModal } from './components/SettingsModal';
 
 function App() {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
   const {
     notes,
     activeNote,
@@ -20,6 +24,9 @@ function App() {
     deleteNote,
     toggleCategory,
     categories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
     memos,
     lastCreatedId,
     createMemo,
@@ -60,6 +67,7 @@ function App() {
           activeNoteId={activeNoteId}
           onSelectNote={selectNote}
           onAddNote={addNote}
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
         <div className="flex-1 flex flex-col h-full relative">
@@ -116,6 +124,15 @@ function App() {
           </div>
         ) : null}
       </DragOverlay>
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        categories={categories}
+        onAddCategory={addCategory}
+        onUpdateCategory={updateCategory}
+        onDeleteCategory={deleteCategory}
+      />
     </DndContext>
   );
 }

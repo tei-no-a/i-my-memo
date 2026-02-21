@@ -10,9 +10,10 @@ interface SidebarProps {
     activeNoteId: string;
     onSelectNote: (noteId: string) => void;
     onAddNote: (title: string) => void;
+    onOpenSettings: () => void;
 }
 
-export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: SidebarProps) {
+export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote, onOpenSettings }: SidebarProps) {
     const [isCreating, setIsCreating] = useState(false);
 
     const handleStartCreating = () => setIsCreating(true);
@@ -76,7 +77,10 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote }: Sideba
                     <Trash2 className="w-4 h-4" />
                     <span className="text-sm">Trash</span>
                 </button>
-                <button className="flex items-center gap-2 text-sm text-theme-fg/60 hover:text-theme-fg transition-colors w-full px-3 py-2 rounded-lg hover:bg-theme-secondary/10">
+                <button
+                    onClick={onOpenSettings}
+                    className="flex items-center gap-2 text-sm text-theme-fg/60 hover:text-theme-fg transition-colors w-full px-3 py-2 rounded-lg hover:bg-theme-secondary/10"
+                >
                     <Settings className="w-4 h-4" />
                     <span>Settings</span>
                 </button>
