@@ -1,15 +1,11 @@
-import { useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Sidebar } from './components/Sidebar';
-import { Header } from './components/Header';
-import { Memo } from './components/Memo';
-import { FAB } from './components/FAB';
-import { CategoryBar } from './components/CategoryBar';
+import { NoteWorkspace } from './components/NoteWorkspace';
 import { useWorkspace } from './hooks/useWorkspace';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
-import { useState } from 'react';
 import { SettingsModal } from './components/SettingsModal';
+import { SPECIAL_NOTE_IDS } from './constants';
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -44,15 +40,7 @@ function App() {
     onDragCancel,
   } = useDragAndDrop({ memos, activeNote, activeNoteId, reorderMemos, moveMemoToNote });
 
-  const isSpecialNote = activeNoteId === 'board' || activeNoteId === 'trash';
-
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (lastCreatedId && activeNote.memoIds.includes(lastCreatedId)) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [memos, lastCreatedId, activeNote]);
+  const isSpecialNote = activeNoteId === SPECIAL_NOTE_IDS.BOARD || activeNoteId === SPECIAL_NOTE_IDS.TRASH;
 
   return (
     <DndContext
@@ -70,51 +58,19 @@ function App() {
           onOpenSettings={() => setIsSettingsOpen(true)}
         />
 
-        <div className="flex-1 flex flex-col h-full relative">
-          <Header
-            title={activeNote.title}
-            canDelete={!isSpecialNote}
-            canRename={!isSpecialNote}
-            onDeleteNote={() => deleteNote(activeNoteId)}
-            onRenameNote={(newTitle) => renameNote(activeNoteId, newTitle)}
-          />
-
-          {!isSpecialNote && (
-            <CategoryBar
-              categories={categories}
-              activeCategoryIds={activeNote.categories || []}
-              onToggle={(categoryId) => toggleCategory(activeNoteId, categoryId)}
-            />
-          )}
-
-          <main className="flex-1 overflow-y-auto p-6 md:p-8">
-            <div className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch pb-24">
-              {memos.length === 0 ? (
-                <div className="text-center text-theme-fg/40 mt-20">
-                  <p>No memos in this note.</p>
-                </div>
-              ) : (
-                <SortableContext
-                  items={activeNote.memoIds}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {memos.map((memo) => (
-                    <Memo
-                      key={memo.id}
-                      data={memo}
-                      onUpdate={updateMemo}
-                      onDelete={deleteMemo}
-                      autoFocus={memo.id === lastCreatedId}
-                    />
-                  ))}
-                </SortableContext>
-              )}
-              <div ref={bottomRef} />
-            </div>
-          </main>
-
-          <FAB onClick={createMemo} />
-        </div>
+        <NoteWorkspace
+          activeNote={activeNote}
+          isSpecialNote={isSpecialNote}
+          categories={categories}
+          memos={memos}
+          lastCreatedId={lastCreatedId}
+          onDeleteNote={() => deleteNote(activeNoteId)}
+          onRenameNote={(newTitle) => renameNote(activeNoteId, newTitle)}
+          onToggleCategory={(categoryId) => toggleCategory(activeNoteId, categoryId)}
+          onCreateMemo={createMemo}
+          onUpdateMemo={updateMemo}
+          onDeleteMemo={deleteMemo}
+        />
       </div>
 
       <DragOverlay dropAnimation={null}>
