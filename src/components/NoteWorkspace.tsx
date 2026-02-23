@@ -34,13 +34,19 @@ export function NoteWorkspace({
     onDeleteMemo
 }: NoteWorkspaceProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
+    const scrolledMemoIdRef = useRef<string | null>(null);
 
     // 今後、エイリアスの出現回数に応じたソートをここで実行します
     const sortedCategories = useCategorySorter(categories, memos);
 
     useEffect(() => {
-        if (lastCreatedId && activeNote.memoIds.includes(lastCreatedId)) {
+        if (
+            lastCreatedId &&
+            scrolledMemoIdRef.current !== lastCreatedId &&
+            activeNote.memoIds.includes(lastCreatedId)
+        ) {
             bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+            scrolledMemoIdRef.current = lastCreatedId;
         }
     }, [memos, lastCreatedId, activeNote]);
 
