@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Settings2, Tags } from 'lucide-react';
-import type { Category, CategoryColor } from '../types/category';
-import { CategoryManager } from './CategoryManager';
+import type { Category, CategoryColor } from '../../types/category';
+import { CategoryManager } from '../Category/CategoryManager';
 
 interface SettingsModalProps {
     isOpen: boolean;

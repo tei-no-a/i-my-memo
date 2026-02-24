@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Book, Plus, Settings, Trash2 } from 'lucide-react';
-import { SPECIAL_NOTE_IDS } from '../constants';
-import { NoteInput } from './NoteInput';
-import { DroppableNoteItem } from './DroppableNoteItem';
-import type { Note } from '../types';
+import { SPECIAL_NOTE_IDS } from '../../constants';
+import { NoteInput } from '../Note/NoteInput';
+import { DroppableNoteItem } from '../Note/DroppableNoteItem';
+import type { Note } from '../../types';
 
 interface SidebarProps {
     notes: Note[];

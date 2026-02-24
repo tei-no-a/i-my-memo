@@ -1,6 +1,6 @@
 import { useDroppable } from '@dnd-kit/core';
-import { DND_PREFIX, DND_ITEM_TYPES } from '../constants';
-import type { Note } from '../types';
+import { DND_PREFIX, DND_ITEM_TYPES } from '../../constants';
+import type { Note } from '../../types';
 
 interface DroppableNoteItemProps {
     note: Note;

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
-import { Sidebar } from './components/Sidebar';
-import { NoteWorkspace } from './components/NoteWorkspace';
+import { Sidebar } from './components/Layout/Sidebar';
+import { NoteWorkspace } from './components/Note/NoteWorkspace';
 import { useWorkspace } from './hooks/useWorkspace';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
-import { SettingsModal } from './components/SettingsModal';
+import { SettingsModal } from './components/Layout/SettingsModal';
 import { SPECIAL_NOTE_IDS } from './constants';
 
 function App() {

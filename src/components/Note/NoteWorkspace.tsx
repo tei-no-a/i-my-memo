@@ -1,10 +1,10 @@
 import { useRef, useEffect } from 'react';
-import { Header } from './Header';
-import { CategoryBar } from './CategoryBar';
-import { MemoList } from './MemoList';
-import { FAB } from './FAB';
-import { useCategorySorter } from '../hooks/useCategorySorter';
-import type { Note, Category, MemoData } from '../types';
+import { Header } from '../Layout/Header';
+import { CategoryBar } from '../Category/CategoryBar';
+import { MemoList } from '../Memo/MemoList';
+import { FAB } from '../Layout/FAB';
+import { useCategorySorter } from '../../hooks/useCategorySorter';
+import type { Note, Category, MemoData } from '../../types';
 
 interface NoteWorkspaceProps {
     activeNote: Note;

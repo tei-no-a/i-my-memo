@@ -1,5 +1,5 @@
-import type { Category } from '../types';
-import { CATEGORY_COLOR_MAP } from '../constants';
+import type { Category } from '../../types';
+import { CATEGORY_COLOR_MAP } from '../../constants';
 
 interface CategoryBarProps {
     categories: Category[];

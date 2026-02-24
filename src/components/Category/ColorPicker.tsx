@@ -1,5 +1,5 @@
-import { CATEGORY_COLOR_DISPLAY_MAP } from '../constants/categories';
-import type { CategoryColor } from '../types/category';
+import { CATEGORY_COLOR_DISPLAY_MAP } from '../../constants/categories';
+import type { CategoryColor } from '../../types/category';
 import { Check } from 'lucide-react';
 
 interface ColorPickerProps {

@@ -44,6 +44,15 @@ export function useWorkspace() {
             .filter((m): m is MemoData => m !== undefined);
     }, [allMemos, activeNote]);
 
+    // ==========================================
+    // Memo Operations (メモの操作ロジック)
+    // ==========================================
+
+    // [Feature Extension Point]: duplicateMemo
+    // 今後「メモの複製」機能を追加する際は、ここに以下のようなメソッドを追加します。
+    // 1. useMemos 側に duplicateMemoFile(content) を生やす
+    // 2. このフック内でそれを利用し、新しいメモを useNotes の insertMemoAfter 等で直下に配置する。
+
     const createMemo = useCallback(async () => {
         try {
             const newMemo = await createMemoFile();
@@ -71,6 +80,11 @@ export function useWorkspace() {
             console.error("Failed to delete memo", error);
         }
     }, [deleteMemoFile, removeMemoFromNote, activeNoteId, moveMemoToNoteRaw]);
+
+    // [Feature Extension Point]: exportMemo
+    // 今後「指定フォルダへのメモエクスポート」機能を追加する際は、ここにメソッドを追加します。
+    // Tauriの @tauri-apps/plugin-dialog (save) を用いて保存先を取得し、
+    // plugin-fs (writeTextFile) を使って対象メモの内容を出力する想定です。
 
     const deleteNote = useCallback((noteId: string) => {
         const deleted = deleteNoteRaw(noteId);

@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Menu, MoreVertical, Trash2, Pencil } from 'lucide-react';
-import { DropdownMenu } from './DropdownMenu';
+import { DropdownMenu } from '../Memo/DropdownMenu';
 
 interface HeaderProps {
     title: string;

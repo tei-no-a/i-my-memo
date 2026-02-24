@@ -1,6 +1,6 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Memo } from './Memo';
-import type { MemoData } from '../types';
+import type { MemoData } from '../../types';
 
 interface MemoListProps {
     memos: MemoData[];

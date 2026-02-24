@@ -2,9 +2,9 @@ import { GripHorizontal, MoreVertical, X } from 'lucide-react';
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DND_ITEM_TYPES } from '../constants';
-import type { MemoData } from '../types';
-import { DropdownMenu } from './DropdownMenu';
+import { DND_ITEM_TYPES } from '../../constants';
+import type { MemoData } from '../../types';
+import { DropdownMenu } from '../Memo/DropdownMenu';
 
 interface MemoProps {
     data: MemoData;
