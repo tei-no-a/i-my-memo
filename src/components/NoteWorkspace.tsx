@@ -18,6 +18,8 @@ interface NoteWorkspaceProps {
     onCreateMemo: () => void;
     onUpdateMemo: (id: string, content: string) => void;
     onDeleteMemo: (id: string) => void;
+    isTrashNote: boolean;
+    onReturnToBoard: (id: string) => void;
 }
 
 export function NoteWorkspace({
@@ -31,7 +33,9 @@ export function NoteWorkspace({
     onToggleCategory,
     onCreateMemo,
     onUpdateMemo,
-    onDeleteMemo
+    onDeleteMemo,
+    isTrashNote,
+    onReturnToBoard
 }: NoteWorkspaceProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const scrolledMemoIdRef = useRef<string | null>(null);
@@ -77,6 +81,8 @@ export function NoteWorkspace({
                         bottomRef={bottomRef}
                         onUpdateMemo={onUpdateMemo}
                         onDeleteMemo={onDeleteMemo}
+                        isTrashNote={isTrashNote}
+                        onReturnToBoard={onReturnToBoard}
                     />
                 </div>
             </main>

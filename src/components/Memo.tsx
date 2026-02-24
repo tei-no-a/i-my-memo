@@ -4,6 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DND_ITEM_TYPES } from '../constants';
 import type { MemoData } from '../types';
+import { DropdownMenu } from './DropdownMenu';
 
 interface MemoProps {
     data: MemoData;
@@ -11,10 +12,13 @@ interface MemoProps {
     onUpdate: (id: string, content: string) => void;
     onDelete: (id: string) => void;
     autoFocus?: boolean;
+    isTrashNote: boolean;
+    onReturnToBoard: (id: string) => void;
 }
 
-export function Memo({ data, onUpdate, onDelete, autoFocus }: MemoProps) {
+export function Memo({ data, onUpdate, onDelete, autoFocus, isTrashNote, onReturnToBoard }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const {
         attributes,
@@ -51,7 +55,7 @@ export function Memo({ data, onUpdate, onDelete, autoFocus }: MemoProps) {
             >
                 <GripHorizontal className="w-4 h-4" />
                 <div
-                    className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity relative"
                     onPointerDown={(e) => e.stopPropagation()}
                 >
                     <button
@@ -60,9 +64,48 @@ export function Memo({ data, onUpdate, onDelete, autoFocus }: MemoProps) {
                     >
                         <X className="w-3.5 h-3.5" />
                     </button>
-                    <button className="p-1 hover:bg-theme-bg-soft rounded">
-                        <MoreVertical className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="p-1 hover:bg-theme-bg-soft rounded text-theme-fg/40 hover:text-theme-fg/80"
+                        >
+                            <MoreVertical className="w-3.5 h-3.5" />
+                        </button>
+                        <DropdownMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)}>
+                            {isTrashNote ? (
+                                <button
+                                    onClick={() => {
+                                        onReturnToBoard(data.id);
+                                        setIsMenuOpen(false);
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                >
+                                    ボードへ戻す
+                                </button>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                    >
+                                        エクスポート
+                                    </button>
+                                    <button
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                    >
+                                        複製する
+                                    </button>
+                                    <button
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                    >
+                                        タスクに変換
+                                    </button>
+                                </>
+                            )}
+                        </DropdownMenu>
+                    </div>
                 </div>
             </div>
 

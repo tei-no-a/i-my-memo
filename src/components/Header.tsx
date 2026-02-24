@@ -82,7 +82,7 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                         <h2
                             className={`text-xl font-bold text-theme-fg ${canRename ? 'cursor-pointer hover:text-theme-accent transition-colors' : ''}`}
                             onDoubleClick={startEditing}
-                            title={canRename ? 'ダブルクリックで名前を変更' : undefined}
+                            title={canRename ? 'ダブルクリックでタイトルを変更' : undefined}
                         >
                             {title}
                         </h2>
@@ -90,7 +90,7 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                             <button
                                 onClick={startEditing}
                                 className="p-1 rounded-md text-theme-fg/30 hover:text-theme-accent hover:bg-theme-bg-soft transition-all opacity-0 group-hover:opacity-100"
-                                title="名前を変更"
+                                title="タイトルを変更"
                             >
                                 <Pencil className="w-3.5 h-3.5" />
                             </button>
@@ -115,7 +115,7 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                                 className="w-full text-left px-4 py-2.5 text-sm text-theme-fg hover:bg-theme-bg-soft flex items-center gap-2 transition-colors"
                             >
                                 <Pencil className="w-4 h-4" />
-                                Rename
+                                タイトルを変更
                             </button>
                         )}
                         {canDelete && (
@@ -124,7 +124,7 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                                 className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
                             >
                                 <Trash2 className="w-4 h-4" />
-                                Delete Note
+                                ノートを削除
                             </button>
                         )}
                         {!canDelete && !canRename && (

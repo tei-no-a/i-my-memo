@@ -61,6 +61,7 @@ function App() {
         <NoteWorkspace
           activeNote={activeNote}
           isSpecialNote={isSpecialNote}
+          isTrashNote={activeNoteId === SPECIAL_NOTE_IDS.TRASH}
           categories={categories}
           memos={memos}
           lastCreatedId={lastCreatedId}
@@ -70,6 +71,7 @@ function App() {
           onCreateMemo={createMemo}
           onUpdateMemo={updateMemo}
           onDeleteMemo={deleteMemo}
+          onReturnToBoard={(memoId) => moveMemoToNote(memoId, SPECIAL_NOTE_IDS.BOARD)}
         />
       </div>
 
