@@ -10,13 +10,14 @@ interface MemoProps {
     data: MemoData;
 
     onUpdate: (id: string, content: string) => void;
+    onDuplicate: (id: string) => void;
     onDelete: (id: string) => void;
     autoFocus?: boolean;
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
 }
 
-export function Memo({ data, onUpdate, onDelete, autoFocus, isTrashNote, onReturnToBoard }: MemoProps) {
+export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrashNote, onReturnToBoard }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -36,6 +37,7 @@ export function Memo({ data, onUpdate, onDelete, autoFocus, isTrashNote, onRetur
 
     return (
         <div
+            id={`memo-${data.id}`}
             ref={setNodeRef}
             style={style}
             className={`
@@ -91,7 +93,10 @@ export function Memo({ data, onUpdate, onDelete, autoFocus, isTrashNote, onRetur
                                         エクスポート
                                     </button>
                                     <button
-                                        onClick={() => setIsMenuOpen(false)}
+                                        onClick={() => {
+                                            onDuplicate(data.id);
+                                            setIsMenuOpen(false);
+                                        }}
                                         className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
                                     >
                                         複製する

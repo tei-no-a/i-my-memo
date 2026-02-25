@@ -8,12 +8,13 @@ interface MemoListProps {
     lastCreatedId: string | null;
     bottomRef: React.RefObject<HTMLDivElement | null>;
     onUpdateMemo: (id: string, content: string) => void;
+    onDuplicateMemo: (id: string) => void;
     onDeleteMemo: (id: string) => void;
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
 }
 
-export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, onUpdateMemo, onDeleteMemo, isTrashNote, onReturnToBoard }: MemoListProps) {
+export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, onUpdateMemo, onDuplicateMemo, onDeleteMemo, isTrashNote, onReturnToBoard }: MemoListProps) {
     if (memos.length === 0) {
         return (
             <div className="text-center text-theme-fg/40 mt-20">
@@ -32,6 +33,7 @@ export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, o
                     key={memo.id}
                     data={memo}
                     onUpdate={onUpdateMemo}
+                    onDuplicate={onDuplicateMemo}
                     onDelete={onDeleteMemo}
                     autoFocus={memo.id === lastCreatedId}
                     isTrashNote={isTrashNote}

@@ -26,6 +26,7 @@ function App() {
     memos,
     lastCreatedId,
     createMemo,
+    duplicateMemo,
     updateMemo,
     deleteMemo,
     reorderMemos,
@@ -70,6 +71,7 @@ function App() {
           onToggleCategory={(categoryId) => toggleCategory(activeNoteId, categoryId)}
           onCreateMemo={createMemo}
           onUpdateMemo={updateMemo}
+          onDuplicateMemo={duplicateMemo}
           onDeleteMemo={deleteMemo}
           onReturnToBoard={(memoId) => moveMemoToNote(memoId, SPECIAL_NOTE_IDS.BOARD)}
         />

@@ -50,6 +50,26 @@ export function useMemos() {
         return null;
     }, []);
 
+    const duplicateMemoFile = useCallback(async (sourceId: string) => {
+        const content = await storage.readText(getMemoPath(sourceId));
+        if (content === null) return null;
+
+        const id = generateMemoId(new Date());
+        const newMemo: MemoData = {
+            id,
+            content,
+            createdAt: parseMemoId(id)
+        };
+
+        const success = await storage.writeText(getMemoPath(id), content);
+        if (success) {
+            setMemos(prev => [newMemo, ...prev]);
+            setLastCreatedId(id);
+            return newMemo;
+        }
+        return null;
+    }, []);
+
     const updateMemo = useCallback((id: string, content: string) => {
         // Optimistic update
         setMemos(prev => prev.map(memo => memo.id === id ? { ...memo, content } : memo));
@@ -77,6 +97,7 @@ export function useMemos() {
         memos,
         lastCreatedId,
         createMemoFile,
+        duplicateMemoFile,
         updateMemo,
         deleteMemoFile
     };

@@ -17,6 +17,7 @@ interface NoteWorkspaceProps {
     onToggleCategory: (categoryId: string) => void;
     onCreateMemo: () => void;
     onUpdateMemo: (id: string, content: string) => void;
+    onDuplicateMemo: (id: string) => void;
     onDeleteMemo: (id: string) => void;
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
@@ -33,6 +34,7 @@ export function NoteWorkspace({
     onToggleCategory,
     onCreateMemo,
     onUpdateMemo,
+    onDuplicateMemo,
     onDeleteMemo,
     isTrashNote,
     onReturnToBoard
@@ -49,7 +51,8 @@ export function NoteWorkspace({
             scrolledMemoIdRef.current !== lastCreatedId &&
             activeNote.memoIds.includes(lastCreatedId)
         ) {
-            bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+            const el = document.getElementById(`memo-${lastCreatedId}`);
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scrolledMemoIdRef.current = lastCreatedId;
         }
     }, [memos, lastCreatedId, activeNote]);
@@ -80,6 +83,7 @@ export function NoteWorkspace({
                         lastCreatedId={lastCreatedId}
                         bottomRef={bottomRef}
                         onUpdateMemo={onUpdateMemo}
+                        onDuplicateMemo={onDuplicateMemo}
                         onDeleteMemo={onDeleteMemo}
                         isTrashNote={isTrashNote}
                         onReturnToBoard={onReturnToBoard}

@@ -82,6 +82,18 @@ export function useNotes() {
         }));
     }, [updateNote]);
 
+    const insertMemoAfter = useCallback((noteId: string, targetMemoId: string, newMemoId: string) => {
+        updateNote(noteId, note => {
+            const index = note.memoIds.indexOf(targetMemoId);
+            if (index === -1) {
+                return { memoIds: [...note.memoIds, newMemoId] };
+            }
+            const newMemoIds = [...note.memoIds];
+            newMemoIds.splice(index + 1, 0, newMemoId);
+            return { memoIds: newMemoIds };
+        });
+    }, [updateNote]);
+
     const removeMemoFromNote = useCallback((noteId: string, memoId: string) => {
         updateNote(noteId, note => ({
             memoIds: note.memoIds.filter(id => id !== memoId)
@@ -159,6 +171,7 @@ export function useNotes() {
         setActiveNoteId,
         activeNote,
         addMemoToNote,
+        insertMemoAfter,
         removeMemoFromNote,
         reorderMemos,
         moveMemoToNote,

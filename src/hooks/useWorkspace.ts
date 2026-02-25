@@ -12,6 +12,7 @@ export function useWorkspace() {
         setActiveNoteId: selectNote,
         activeNote,
         addMemoToNote,
+        insertMemoAfter,
         removeMemoFromNote,
         reorderMemos,
         moveMemoToNote: moveMemoToNoteRaw,
@@ -32,6 +33,7 @@ export function useWorkspace() {
         memos: allMemos,
         lastCreatedId,
         createMemoFile,
+        duplicateMemoFile,
         updateMemo,
         deleteMemoFile
     } = useMemos();
@@ -52,6 +54,17 @@ export function useWorkspace() {
     // 今後「メモの複製」機能を追加する際は、ここに以下のようなメソッドを追加します。
     // 1. useMemos 側に duplicateMemoFile(content) を生やす
     // 2. このフック内でそれを利用し、新しいメモを useNotes の insertMemoAfter 等で直下に配置する。
+
+    const duplicateMemo = useCallback(async (memoId: string) => {
+        try {
+            const newMemo = await duplicateMemoFile(memoId);
+            if (newMemo) {
+                insertMemoAfter(activeNoteId, memoId, newMemo.id);
+            }
+        } catch (error) {
+            console.error("Failed to duplicate memo", error);
+        }
+    }, [duplicateMemoFile, insertMemoAfter, activeNoteId]);
 
     const createMemo = useCallback(async () => {
         try {
@@ -119,6 +132,7 @@ export function useWorkspace() {
         memos,
         lastCreatedId,
         createMemo,
+        duplicateMemo,
         updateMemo,
         deleteMemo,
         deleteNote,
