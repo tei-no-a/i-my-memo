@@ -29,6 +29,7 @@ function App() {
     duplicateMemo,
     updateMemo,
     deleteMemo,
+    emptyTrash,
     reorderMemos,
     moveMemoToNote
   } = useWorkspace();
@@ -73,6 +74,7 @@ function App() {
           onUpdateMemo={updateMemo}
           onDuplicateMemo={duplicateMemo}
           onDeleteMemo={deleteMemo}
+          onEmptyTrash={emptyTrash}
           onReturnToBoard={(memoId) => moveMemoToNote(memoId, SPECIAL_NOTE_IDS.BOARD)}
         />
       </div>

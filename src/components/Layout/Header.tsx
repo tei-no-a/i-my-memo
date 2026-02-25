@@ -8,12 +8,15 @@ interface HeaderProps {
     canRename?: boolean;
     onDeleteNote?: () => void;
     onRenameNote?: (newTitle: string) => void;
+    isTrashNote?: boolean;
+    onEmptyTrash?: () => void;
 }
 
-export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote }: HeaderProps) {
+export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote, isTrashNote, onEmptyTrash }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(title);
+    const [isConfirmingEmptyTrash, setIsConfirmingEmptyTrash] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // title が外部から変わったとき（別ノートへ切り替え）に同期
@@ -35,6 +38,18 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
             onDeleteNote();
             setIsMenuOpen(false);
         }
+    };
+
+    const handleEmptyTrash = () => {
+        setIsConfirmingEmptyTrash(true);
+        setIsMenuOpen(false);
+    };
+
+    const confirmEmptyTrash = () => {
+        if (onEmptyTrash) {
+            onEmptyTrash();
+        }
+        setIsConfirmingEmptyTrash(false);
     };
 
     const startEditing = () => {
@@ -127,14 +142,49 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                                 ノートを削除
                             </button>
                         )}
-                        {!canDelete && !canRename && (
+                        {!canDelete && !canRename && !isTrashNote && (
                             <div className="px-4 py-2 text-xs text-theme-fg/40 text-center">
                                 No actions available
                             </div>
                         )}
+                        {isTrashNote && (
+                            <button
+                                onClick={handleEmptyTrash}
+                                className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                ゴミ箱を空にする
+                            </button>
+                        )}
                     </DropdownMenu>
                 </div>
             </div>
+
+            {/* Empty Trash Confirmation Dialog */}
+            {isConfirmingEmptyTrash && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-theme-bg/60 backdrop-blur-sm">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 border border-theme-border animate-in fade-in zoom-in-95 duration-200">
+                        <h3 className="text-lg font-bold text-theme-fg mb-2">ゴミ箱を空にする</h3>
+                        <p className="text-sm text-theme-fg/70 mb-5">
+                            ゴミ箱内のすべてのメモを完全に削除しますか？ この操作は取り消せません。
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setIsConfirmingEmptyTrash(false)}
+                                className="px-4 py-2 text-sm font-medium text-theme-fg hover:bg-theme-bg-soft rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmEmptyTrash}
+                                className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }

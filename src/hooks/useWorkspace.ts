@@ -94,6 +94,21 @@ export function useWorkspace() {
         }
     }, [deleteMemoFile, removeMemoFromNote, activeNoteId, moveMemoToNoteRaw]);
 
+    const emptyTrash = useCallback(async () => {
+        if (activeNoteId !== SPECIAL_NOTE_IDS.TRASH) return;
+        try {
+            const trashMemoIds = [...activeNote.memoIds];
+            if (trashMemoIds.length === 0) return;
+
+            const promises = trashMemoIds.map(id => deleteMemoFile(id));
+            await Promise.all(promises);
+
+            reorderMemos(activeNoteId, []);
+        } catch (error) {
+            console.error("Failed to empty trash", error);
+        }
+    }, [activeNoteId, activeNote.memoIds, deleteMemoFile, reorderMemos]);
+
     // [Feature Extension Point]: exportMemo
     // 今後「指定フォルダへのメモエクスポート」機能を追加する際は、ここにメソッドを追加します。
     // Tauriの @tauri-apps/plugin-dialog (save) を用いて保存先を取得し、
@@ -135,6 +150,7 @@ export function useWorkspace() {
         duplicateMemo,
         updateMemo,
         deleteMemo,
+        emptyTrash,
         deleteNote,
         // DnD operations
         reorderMemos,
