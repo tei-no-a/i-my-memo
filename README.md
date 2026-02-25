@@ -29,7 +29,7 @@ Markdownエディタ「Obsidian」との連携を前提としています。
 左サイドバー内の「＋」ボタンを押すと、新規ノートが追加されます。ショートカットキー`Ctrl + N`でも追加可能です。
 ノートの名前を入力して確定すると、ノートが作成されます。ノートの名前をクリックすると、そのノートが選択されボード画面上に表示されます。
 ボードからメモをドラッグ&ドロップで移動させたり、ノート間でメモを移動させたりすることが可能です。移動したメモはノートの最後尾に追加されます。また、ノート内で新たなメモを作成することも可能です。
-ノートのデータはインストールフォルダ内の`data/note.json`に保存されます。
+ノートのデータはインストールフォルダ内の`data/notes.json`に保存されます。
 
 ### メモとノートの削除
 メモは個別メニューのゴミ箱アイコンから削除できます。削除されたメモは「ゴミ箱」ノートに保管されます。
@@ -47,19 +47,22 @@ Markdownエディタ「Obsidian」との連携を前提としています。
 メモをデイリーノートに追記すると、デフォルト設定ではI My Memo内のメモは自動的に削除されます。この動作は設定ファイルで変更可能です。
 
 ### 設定
-設定ファイルは、アプリの初回起動時に自動的に作成されます。設定ファイルは、アプリのインストールフォルダにある`config.toml`です。
-設定ファイルは、テキストエディタで編集できます。
+設定ファイルは、アプリの初回起動時に自動的に作成されます。設定ファイルは、アプリのインストールフォルダにある`config.json`です。
+「Settings」から変更するか、直にテキストエディタで編集できます。
 設定ファイルの内容は、以下の通りです。
-```toml
-[trash]
-note_delete_to_trash = false
-
-[export]
-path = "C:\Users\username\Documents\Obsidian\Vault"
-auto_delete = true
-
-[daily_note]
-path = "C:\Users\username\Documents\Obsidian\Vault"
-filename = "YYYY-MM-DD.md"
-auto_delete = true
+```json
+{
+  "trash": {
+    "note_delete_to_trash": false
+  },
+  "export": {
+    "path": "C:\\Users\\username\\Documents\\Obsidian\\Vault",
+    "auto_delete": true
+  },
+  "daily_note": {
+    "path": "C:\\Users\\username\\Documents\\Obsidian\\Vault",
+    "filename": "YYYY-MM-DD.md",
+    "auto_delete": true
+  }
+}
 ```
