@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { storage } from '../utils/storage';
 import { MEMO_DIR } from '../constants';
 import { getMemoPath, generateMemoId, parseMemoId } from '../utils/memo';
-import type { MemoData, MemoMeta } from '../types';
+import type { MemoData } from '../types';
 
 /**
  * メモの状態管理フック（遅延読み込み対応版）
@@ -14,27 +14,15 @@ import type { MemoData, MemoMeta } from '../types';
  * - メモの作成・編集・削除時にキャッシュも同期的に更新する
  */
 export function useMemos() {
-    const [allMemoMeta, setAllMemoMeta] = useState<MemoMeta[]>([]);
     const [loadedMemos, setLoadedMemos] = useState<MemoData[]>([]);
     const [isLoadingMemos, setIsLoadingMemos] = useState(false);
     const [lastCreatedId, setLastCreatedId] = useState<string | null>(null);
     const saveTimeoutRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
     const contentCache = useRef<Map<string, string>>(new Map());
 
-    // 起動時: ファイル一覧からメタデータだけを取得（本文は読まない）
+    // 起動時: メモ保存ディレクトリの存在を保証
     useEffect(() => {
-        const load = async () => {
-            await storage.ensureDir(MEMO_DIR);
-            const entries = await storage.list(MEMO_DIR);
-            const metaList: MemoMeta[] = entries
-                .filter(e => e.isFile && e.name.endsWith('.md'))
-                .map(e => {
-                    const id = e.name.replace('.md', '');
-                    return { id, createdAt: parseMemoId(id) };
-                });
-            setAllMemoMeta(metaList.sort((a, b) => b.id.localeCompare(a.id)));
-        };
-        load();
+        storage.ensureDir(MEMO_DIR);
     }, []);
 
     // 指定されたメモIDの本文を並列で読み込み、loadedMemosを更新する
@@ -83,7 +71,6 @@ export function useMemos() {
         const success = await storage.writeText(getMemoPath(id), '');
         if (success) {
             contentCache.current.set(id, '');
-            setAllMemoMeta(prev => [{ id, createdAt: newMemo.createdAt }, ...prev]);
             setLoadedMemos(prev => [...prev, newMemo]);
             setLastCreatedId(id);
             return newMemo;
@@ -106,7 +93,6 @@ export function useMemos() {
         const success = await storage.writeText(getMemoPath(id), content);
         if (success) {
             contentCache.current.set(id, content);
-            setAllMemoMeta(prev => [{ id, createdAt: newMemo.createdAt }, ...prev]);
             setLoadedMemos(prev => [...prev, newMemo]);
             setLastCreatedId(id);
             return newMemo;
@@ -135,7 +121,6 @@ export function useMemos() {
         const success = await storage.remove(getMemoPath(id));
         if (success) {
             contentCache.current.delete(id);
-            setAllMemoMeta(prev => prev.filter(m => m.id !== id));
             setLoadedMemos(prev => prev.filter(memo => memo.id !== id));
             return true;
         }
@@ -143,7 +128,6 @@ export function useMemos() {
     }, []);
 
     return {
-        allMemoMeta,
         loadedMemos,
         isLoadingMemos,
         lastCreatedId,

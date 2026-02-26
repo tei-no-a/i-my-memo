@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DND_ITEM_TYPES } from '../../constants';
 import type { MemoData } from '../../types';
-import { DropdownMenu } from '../Memo/DropdownMenu';
+import { DropdownMenu } from '../Layout/DropdownMenu';
 
 interface MemoProps {
     data: MemoData;
@@ -16,6 +16,8 @@ interface MemoProps {
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
 }
+
+const MENU_BUTTON_CLASS = 'w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors';
 
 export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrashNote, onReturnToBoard }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
@@ -80,7 +82,7 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrash
                                         onReturnToBoard(data.id);
                                         setIsMenuOpen(false);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                    className={MENU_BUTTON_CLASS}
                                 >
                                     ボードへ戻す
                                 </button>
@@ -88,7 +90,7 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrash
                                 <>
                                     <button
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                        className={MENU_BUTTON_CLASS}
                                     >
                                         エクスポート
                                     </button>
@@ -97,13 +99,13 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrash
                                             onDuplicate(data.id);
                                             setIsMenuOpen(false);
                                         }}
-                                        className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                        className={MENU_BUTTON_CLASS}
                                     >
                                         複製する
                                     </button>
                                     <button
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors"
+                                        className={MENU_BUTTON_CLASS}
                                     >
                                         タスクに変換
                                     </button>
@@ -115,17 +117,15 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrash
             </div>
 
             {/* Content */}
-            <div className="p-0">
-                <textarea
-                    value={data.content}
-                    onChange={(e) => onUpdate(data.id, e.target.value)}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    placeholder="Take a note..."
-                    autoFocus={autoFocus}
-                    className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-base leading-relaxed textarea-autosize rounded-b-2xl"
-                />
-            </div>
+            <textarea
+                value={data.content}
+                onChange={(e) => onUpdate(data.id, e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder="Take a note..."
+                autoFocus={autoFocus}
+                className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-base leading-relaxed textarea-autosize rounded-b-2xl"
+            />
 
             {/* Footer */}
             <div className="px-4 py-2 border-t border-theme-border/30 text-[10px] font-medium text-theme-fg/30 uppercase tracking-wider flex justify-end">
