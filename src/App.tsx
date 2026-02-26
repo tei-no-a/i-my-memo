@@ -24,6 +24,7 @@ function App() {
     updateCategory,
     deleteCategory,
     memos,
+    isLoadingMemos,
     lastCreatedId,
     createMemo,
     duplicateMemo,
@@ -66,6 +67,7 @@ function App() {
           isTrashNote={activeNoteId === SPECIAL_NOTE_IDS.TRASH}
           categories={categories}
           memos={memos}
+          isLoadingMemos={isLoadingMemos}
           lastCreatedId={lastCreatedId}
           onDeleteNote={() => deleteNote(activeNoteId)}
           onRenameNote={(newTitle) => renameNote(activeNoteId, newTitle)}

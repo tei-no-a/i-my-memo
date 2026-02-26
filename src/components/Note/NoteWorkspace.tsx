@@ -11,6 +11,7 @@ interface NoteWorkspaceProps {
     isSpecialNote: boolean;
     categories: Category[];
     memos: MemoData[];
+    isLoadingMemos: boolean;
     lastCreatedId: string | null;
     onDeleteNote: () => void;
     onRenameNote: (newTitle: string) => void;
@@ -29,6 +30,7 @@ export function NoteWorkspace({
     isSpecialNote,
     categories,
     memos,
+    isLoadingMemos,
     lastCreatedId,
     onDeleteNote,
     onRenameNote,
@@ -81,17 +83,28 @@ export function NoteWorkspace({
 
             <main className="flex-1 overflow-y-auto p-6 md:p-8">
                 <div className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch pb-24">
-                    <MemoList
-                        memos={memos}
-                        activeNoteMemoIds={activeNote.memoIds}
-                        lastCreatedId={lastCreatedId}
-                        bottomRef={bottomRef}
-                        onUpdateMemo={onUpdateMemo}
-                        onDuplicateMemo={onDuplicateMemo}
-                        onDeleteMemo={onDeleteMemo}
-                        isTrashNote={isTrashNote}
-                        onReturnToBoard={onReturnToBoard}
-                    />
+                    {isLoadingMemos ? (
+                        <div className="flex flex-col gap-6 mt-4">
+                            {[...Array(3)].map((_, i) => (
+                                <div key={i} className="bg-white rounded-2xl shadow-sm border border-theme-border/50 p-4 animate-pulse">
+                                    <div className="h-3 bg-theme-fg/10 rounded w-3/4 mb-3" />
+                                    <div className="h-3 bg-theme-fg/10 rounded w-1/2" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <MemoList
+                            memos={memos}
+                            activeNoteMemoIds={activeNote.memoIds}
+                            lastCreatedId={lastCreatedId}
+                            bottomRef={bottomRef}
+                            onUpdateMemo={onUpdateMemo}
+                            onDuplicateMemo={onDuplicateMemo}
+                            onDeleteMemo={onDeleteMemo}
+                            isTrashNote={isTrashNote}
+                            onReturnToBoard={onReturnToBoard}
+                        />
+                    )}
                 </div>
             </main>
 

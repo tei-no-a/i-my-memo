@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect } from 'react';
 import { useCategories } from './useCategories';
 import { useMemos } from './useMemos';
 import { useNotes } from './useNotes';
@@ -30,21 +30,28 @@ export function useWorkspace() {
     } = useCategories();
 
     const {
-        memos: allMemos,
+        loadedMemos,
+        isLoadingMemos,
         lastCreatedId,
+        loadMemosForNote,
         createMemoFile,
         duplicateMemoFile,
         updateMemo,
         deleteMemoFile
     } = useMemos();
 
-    // Filter memos belonging to the active note and preserve order
+    // ノート切り替え時にメモの本文を読み込む
+    useEffect(() => {
+        loadMemosForNote(activeNote.memoIds);
+    }, [activeNote.memoIds, loadMemosForNote]);
+
+    // loadedMemos からアクティブノートのメモを順序付きで取得
     const memos = useMemo(() => {
-        const memoMap = new Map(allMemos.map(m => [m.id, m]));
+        const memoMap = new Map(loadedMemos.map(m => [m.id, m]));
         return activeNote.memoIds
             .map(id => memoMap.get(id))
             .filter((m): m is MemoData => m !== undefined);
-    }, [allMemos, activeNote]);
+    }, [loadedMemos, activeNote]);
 
     // ==========================================
     // Memo Operations (メモの操作ロジック)
@@ -145,6 +152,7 @@ export function useWorkspace() {
         deleteCategory: deleteCategoryRaw,
         // Memos
         memos,
+        isLoadingMemos,
         lastCreatedId,
         createMemo,
         duplicateMemo,

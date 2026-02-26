@@ -2,35 +2,74 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { storage } from '../utils/storage';
 import { MEMO_DIR } from '../constants';
 import { getMemoPath, generateMemoId, parseMemoId } from '../utils/memo';
-import type { MemoData } from '../types';
+import type { MemoData, MemoMeta } from '../types';
 
+/**
+ * メモの状態管理フック（遅延読み込み対応版）
+ *
+ * 設計方針:
+ * - 起動時はファイル名からメタデータ（id, createdAt）だけを取得し、本文は読まない
+ * - ノート選択時に必要なメモだけ Promise.all で並列に本文を読み込む
+ * - 一度読み込んだ本文は contentCache に保持し、再読み込みを防止する
+ * - メモの作成・編集・削除時にキャッシュも同期的に更新する
+ */
 export function useMemos() {
-    const [memos, setMemos] = useState<MemoData[]>([]);
+    const [allMemoMeta, setAllMemoMeta] = useState<MemoMeta[]>([]);
+    const [loadedMemos, setLoadedMemos] = useState<MemoData[]>([]);
+    const [isLoadingMemos, setIsLoadingMemos] = useState(false);
     const [lastCreatedId, setLastCreatedId] = useState<string | null>(null);
     const saveTimeoutRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+    const contentCache = useRef<Map<string, string>>(new Map());
 
+    // 起動時: ファイル一覧からメタデータだけを取得（本文は読まない）
     useEffect(() => {
         const load = async () => {
             await storage.ensureDir(MEMO_DIR);
             const entries = await storage.list(MEMO_DIR);
-            const loadedMemos: MemoData[] = [];
-
-            for (const entry of entries) {
-                if (entry.isFile && entry.name.endsWith('.md')) {
-                    const id = entry.name.replace('.md', '');
-                    const content = await storage.readText(`${MEMO_DIR}/${entry.name}`);
-                    if (content !== null) {
-                        loadedMemos.push({
-                            id,
-                            content,
-                            createdAt: parseMemoId(id)
-                        });
-                    }
-                }
-            }
-            setMemos(loadedMemos.sort((a, b) => b.id.localeCompare(a.id)));
+            const metaList: MemoMeta[] = entries
+                .filter(e => e.isFile && e.name.endsWith('.md'))
+                .map(e => {
+                    const id = e.name.replace('.md', '');
+                    return { id, createdAt: parseMemoId(id) };
+                });
+            setAllMemoMeta(metaList.sort((a, b) => b.id.localeCompare(a.id)));
         };
         load();
+    }, []);
+
+    // 指定されたメモIDの本文を並列で読み込み、loadedMemosを更新する
+    const loadMemosForNote = useCallback(async (memoIds: string[]) => {
+        setIsLoadingMemos(true);
+        try {
+            // キャッシュにないメモだけファイルから読み込む
+            const uncachedIds = memoIds.filter(id => !contentCache.current.has(id));
+
+            if (uncachedIds.length > 0) {
+                const results = await Promise.all(
+                    uncachedIds.map(async id => ({
+                        id,
+                        content: await storage.readText(getMemoPath(id))
+                    }))
+                );
+                results.forEach(r => {
+                    if (r.content !== null) {
+                        contentCache.current.set(r.id, r.content);
+                    }
+                });
+            }
+
+            // キャッシュからMemoData[]を構築（memoIdsの順序を維持）
+            const loaded: MemoData[] = memoIds
+                .filter(id => contentCache.current.has(id))
+                .map(id => ({
+                    id,
+                    content: contentCache.current.get(id)!,
+                    createdAt: parseMemoId(id)
+                }));
+            setLoadedMemos(loaded);
+        } finally {
+            setIsLoadingMemos(false);
+        }
     }, []);
 
     const createMemoFile = useCallback(async () => {
@@ -43,7 +82,9 @@ export function useMemos() {
 
         const success = await storage.writeText(getMemoPath(id), '');
         if (success) {
-            setMemos(prev => [newMemo, ...prev]);
+            contentCache.current.set(id, '');
+            setAllMemoMeta(prev => [{ id, createdAt: newMemo.createdAt }, ...prev]);
+            setLoadedMemos(prev => [...prev, newMemo]);
             setLastCreatedId(id);
             return newMemo;
         }
@@ -51,7 +92,8 @@ export function useMemos() {
     }, []);
 
     const duplicateMemoFile = useCallback(async (sourceId: string) => {
-        const content = await storage.readText(getMemoPath(sourceId));
+        const content = contentCache.current.get(sourceId)
+            ?? await storage.readText(getMemoPath(sourceId));
         if (content === null) return null;
 
         const id = generateMemoId(new Date());
@@ -63,7 +105,9 @@ export function useMemos() {
 
         const success = await storage.writeText(getMemoPath(id), content);
         if (success) {
-            setMemos(prev => [newMemo, ...prev]);
+            contentCache.current.set(id, content);
+            setAllMemoMeta(prev => [{ id, createdAt: newMemo.createdAt }, ...prev]);
+            setLoadedMemos(prev => [...prev, newMemo]);
             setLastCreatedId(id);
             return newMemo;
         }
@@ -71,8 +115,11 @@ export function useMemos() {
     }, []);
 
     const updateMemo = useCallback((id: string, content: string) => {
-        // Optimistic update
-        setMemos(prev => prev.map(memo => memo.id === id ? { ...memo, content } : memo));
+        // キャッシュとstateを即座に更新（オプティミスティック更新）
+        contentCache.current.set(id, content);
+        setLoadedMemos(prev => prev.map(memo =>
+            memo.id === id ? { ...memo, content } : memo
+        ));
 
         if (saveTimeoutRef.current[id]) {
             clearTimeout(saveTimeoutRef.current[id]);
@@ -87,15 +134,20 @@ export function useMemos() {
     const deleteMemoFile = useCallback(async (id: string) => {
         const success = await storage.remove(getMemoPath(id));
         if (success) {
-            setMemos(prev => prev.filter(memo => memo.id !== id));
+            contentCache.current.delete(id);
+            setAllMemoMeta(prev => prev.filter(m => m.id !== id));
+            setLoadedMemos(prev => prev.filter(memo => memo.id !== id));
             return true;
         }
         return false;
     }, []);
 
     return {
-        memos,
+        allMemoMeta,
+        loadedMemos,
+        isLoadingMemos,
         lastCreatedId,
+        loadMemosForNote,
         createMemoFile,
         duplicateMemoFile,
         updateMemo,
