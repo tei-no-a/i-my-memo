@@ -131,6 +131,13 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
 
         const success = await exportMemoToFile(memoId, memo.content, exportSettings.memoExportDir);
         if (success) {
+            // クリップボードにメモの内容をコピー
+            try {
+                await navigator.clipboard.writeText(memo.content);
+            } catch (error) {
+                console.error('Failed to copy to clipboard:', error);
+            }
+
             // 成功時はメモをTrashに移動
             await moveMemoToNoteRaw(activeNoteId, SPECIAL_NOTE_IDS.TRASH, memoId);
         } else {
