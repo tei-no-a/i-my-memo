@@ -107,12 +107,6 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
                                     >
                                         複製する
                                     </button>
-                                    <button
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className={MENU_BUTTON_CLASS}
-                                    >
-                                        タスクに変換
-                                    </button>
                                 </>
                             )}
                         </DropdownMenu>
