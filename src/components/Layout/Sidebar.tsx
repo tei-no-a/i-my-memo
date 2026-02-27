@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Book, Plus, Settings, Trash2 } from 'lucide-react';
+import { StickyNote, Plus, Settings, Trash2 } from 'lucide-react';
 import { SPECIAL_NOTE_IDS } from '../../constants';
 import { NoteInput } from '../Note/NoteInput';
 import { DroppableNoteItem } from '../Note/DroppableNoteItem';
@@ -32,8 +32,8 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote, onOpenSe
                     className={`text-2xl font-bold tracking-tight flex items-center gap-2 hover:opacity-80 transition-opacity ${activeNoteId === SPECIAL_NOTE_IDS.BOARD ? 'text-theme-accent' : 'text-theme-fg'}`}
                     title="Go to Board"
                 >
-                    <Book className="w-6 h-6" />
-                    <span>i-my-memo</span>
+                    <StickyNote className="w-6 h-6" />
+                    <span>I My Memo</span>
                 </button>
             </div>
 

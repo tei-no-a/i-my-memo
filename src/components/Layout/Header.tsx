@@ -79,10 +79,6 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
     return (
         <header className="h-16 flex items-center justify-between px-8 bg-theme-bg border-b border-theme-border/50 sticky top-0 z-10 w-full">
             <div className="flex items-center gap-4">
-                {/* Mobile menu trigger */}
-                <button className="p-2 -ml-2 rounded-md hover:bg-theme-bg-soft text-theme-fg/60 lg:hidden">
-                    <Menu className="w-5 h-5" />
-                </button>
 
                 {isEditing ? (
                     <input
