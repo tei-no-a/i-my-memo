@@ -2,12 +2,13 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { useCategories } from './useCategories';
 import { useMemos } from './useMemos';
 import { useNotes } from './useNotes';
-import { SPECIAL_NOTE_IDS } from '../constants';
+import { SPECIAL_NOTE_IDS, DEFAULT_KEYBINDINGS } from '../constants';
 import { exportMemo as exportMemoToFile, exportNote as exportNoteToFile } from '../utils/export';
+import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import type { MemoData } from '../types';
 import type { ExportSettings } from '../types';
 
-export function useWorkspace(exportSettings?: ExportSettings) {
+export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: boolean = true) {
     const {
         notes,
         activeNoteId,
@@ -179,6 +180,22 @@ export function useWorkspace(exportSettings?: ExportSettings) {
             console.error("Failed to move memo", error);
         }
     }, [moveMemoToNoteRaw, activeNoteId]);
+
+    const actionHandlers = useMemo(() => ({
+        createMemo,
+        exportMemo: () => {
+            if (memos.length > 0) {
+                exportMemo(memos[memos.length - 1].id);
+            }
+        },
+        deleteMemo: () => {
+            if (memos.length > 0) {
+                deleteMemo(memos[memos.length - 1].id);
+            }
+        },
+    }), [createMemo, exportMemo, deleteMemo, memos]);
+
+    useKeyboardShortcuts(DEFAULT_KEYBINDINGS, actionHandlers, allowShortcuts);
 
     return {
         // Notes

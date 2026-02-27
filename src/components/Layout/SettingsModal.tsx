@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Settings2, Tags, FolderOpen } from 'lucide-react';
-import { open } from '@tauri-apps/plugin-dialog';
 import type { Category, CategoryColor } from '../../types/category';
 import type { ExportSettings } from '../../types/settings';
 import { CategoryManager } from '../Category/CategoryManager';
@@ -13,7 +12,7 @@ interface SettingsModalProps {
     onUpdateCategory: (id: number, updater: (cat: Category) => Partial<Category>) => void;
     onDeleteCategory: (id: number) => void;
     exportSettings: ExportSettings;
-    onUpdateExportSettings: (update: Partial<ExportSettings>) => Promise<void>;
+    onSelectExportFolder: (key: keyof ExportSettings) => Promise<void>;
 }
 
 type TabType = 'categories' | 'general';
@@ -26,7 +25,7 @@ export function SettingsModal({
     onUpdateCategory,
     onDeleteCategory,
     exportSettings,
-    onUpdateExportSettings
+    onSelectExportFolder
 }: SettingsModalProps) {
     const [activeTab, setActiveTab] = useState<TabType>('categories');
     const modalRef = useRef<HTMLDivElement>(null);
@@ -55,13 +54,6 @@ export function SettingsModal({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, onClose]);
 
-    /** フォルダ選択ダイアログを表示 */
-    const selectFolder = async (key: keyof ExportSettings) => {
-        const selected = await open({ directory: true, title: 'エクスポート先フォルダを選択' });
-        if (selected) {
-            await onUpdateExportSettings({ [key]: selected });
-        }
-    };
 
     if (!isOpen) return null;
 
@@ -133,7 +125,7 @@ export function SettingsModal({
                                         )}
                                     </div>
                                     <button
-                                        onClick={() => selectFolder('memoExportDir')}
+                                        onClick={() => onSelectExportFolder('memoExportDir')}
                                         className="flex items-center gap-1.5 px-3 py-2 bg-theme-accent/10 text-theme-accent rounded-lg hover:bg-theme-accent/20 transition-colors text-sm font-medium flex-shrink-0"
                                     >
                                         <FolderOpen className="w-4 h-4" />
@@ -157,7 +149,7 @@ export function SettingsModal({
                                         )}
                                     </div>
                                     <button
-                                        onClick={() => selectFolder('noteExportDir')}
+                                        onClick={() => onSelectExportFolder('noteExportDir')}
                                         className="flex items-center gap-1.5 px-3 py-2 bg-theme-accent/10 text-theme-accent rounded-lg hover:bg-theme-accent/20 transition-colors text-sm font-medium flex-shrink-0"
                                     >
                                         <FolderOpen className="w-4 h-4" />

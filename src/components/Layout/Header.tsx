@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Menu, MoreVertical, Trash2, Pencil, Download } from 'lucide-react';
 import { DropdownMenu } from '../Layout/DropdownMenu';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface HeaderProps {
     title: string;
@@ -170,31 +171,16 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                 </div>
             </div>
 
-            {/* Empty Trash Confirmation Dialog */}
-            {isConfirmingEmptyTrash && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-theme-bg/60 backdrop-blur-sm">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 border border-theme-border animate-in fade-in zoom-in-95 duration-200">
-                        <h3 className="text-lg font-bold text-theme-fg mb-2">ゴミ箱を空にする</h3>
-                        <p className="text-sm text-theme-fg/70 mb-5">
-                            ゴミ箱内のすべてのメモを完全に削除しますか？ この操作は取り消せません。
-                        </p>
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setIsConfirmingEmptyTrash(false)}
-                                className="px-4 py-2 text-sm font-medium text-theme-fg hover:bg-theme-bg-soft rounded-lg transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmEmptyTrash}
-                                className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                isOpen={isConfirmingEmptyTrash}
+                title="ゴミ箱を空にする"
+                message="ゴミ箱内のすべてのメモを完全に削除しますか？ この操作は取り消せません。"
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                isDestructive={true}
+                onConfirm={confirmEmptyTrash}
+                onCancel={() => setIsConfirmingEmptyTrash(false)}
+            />
         </header>
     );
 }

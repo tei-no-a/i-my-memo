@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { storage } from '../utils/storage';
+import { open } from '@tauri-apps/plugin-dialog';
 import { SETTINGS_FILE } from '../constants';
 import type { ExportSettings } from '../types';
 
@@ -41,9 +42,17 @@ export function useSettings() {
         await storage.writeJson(SETTINGS_FILE, merged);
     }, [exportSettings]);
 
+    const selectExportFolder = useCallback(async (key: keyof ExportSettings) => {
+        const selected = await open({ directory: true, title: 'エクスポート先フォルダを選択' });
+        if (selected) {
+            await updateExportSettings({ [key]: selected });
+        }
+    }, [updateExportSettings]);
+
     return {
         exportSettings,
         updateExportSettings,
+        selectExportFolder,
         isSettingsLoaded: isLoaded,
     };
 }
