@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { Header } from '../Layout/Header';
 import { CategoryBar } from '../Category/CategoryBar';
 import { MemoList } from '../Memo/MemoList';
@@ -50,7 +50,21 @@ export function NoteWorkspace({
     const bottomRef = useRef<HTMLDivElement>(null);
     const scrolledMemoIdRef = useRef<string | null>(null);
 
-    const sortedCategories = useCategorySorter(categories, memos);
+    const sortedCategoriesWithScore = useCategorySorter(categories, memos);
+
+    const sortedCategories = useMemo(
+        () => sortedCategoriesWithScore.map(item => item.category),
+        [sortedCategoriesWithScore]
+    );
+
+    const zeroScoreCategoryIds = useMemo(
+        () => new Set(
+            sortedCategoriesWithScore
+                .filter(item => item.score === 0)
+                .map(item => item.category.id.toString())
+        ),
+        [sortedCategoriesWithScore]
+    );
 
     useEffect(() => {
         if (
@@ -65,7 +79,7 @@ export function NoteWorkspace({
     }, [memos, lastCreatedId, activeNote]);
 
     return (
-        <div className="flex-1 flex flex-col h-full relative">
+        <div className="flex-1 flex flex-col h-full relative min-w-0">
             <Header
                 title={activeNote.title}
                 canDelete={!isSpecialNote}
@@ -81,6 +95,7 @@ export function NoteWorkspace({
                 <CategoryBar
                     categories={sortedCategories}
                     activeCategoryIds={activeNote.categories || []}
+                    zeroScoreCategoryIds={zeroScoreCategoryIds}
                     onToggle={onToggleCategory}
                 />
             )}

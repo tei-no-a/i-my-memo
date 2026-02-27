@@ -6,10 +6,15 @@ import type { Category, MemoData } from '../types';
  * 各メモの `content` 内に含まれるカテゴリの `name` および `aliases` をカウントし、
  * その出現頻度によって `categories` を並べ替えます。
  */
-export function useCategorySorter(categories: Category[], memos: MemoData[]) {
+export interface CategoryWithScore {
+    category: Category;
+    score: number;
+}
+
+export function useCategorySorter(categories: Category[], memos: MemoData[]): CategoryWithScore[] {
     const sortedCategories = useMemo(() => {
         if (!categories || categories.length === 0) return [];
-        if (!memos || memos.length === 0) return [...categories];
+        if (!memos || memos.length === 0) return categories.map(category => ({ category, score: 0 }));
 
         // 1. 全メモのテキストを結合 (大文字小文字を区別せず検索するため、後でフラグiを使いますが結合はそのまま行います)
         const allText = memos.map(m => m.content).join('\n');
@@ -50,8 +55,8 @@ export function useCategorySorter(categories: Category[], memos: MemoData[]) {
             return a.category.id - b.category.id; // 同点の場合はid順
         });
 
-        // ソート済みのCategoryだけを抽出して返す
-        return categoriesWithScore.map(item => item.category);
+        // ソート済みの Category とスコアをセットで返す
+        return categoriesWithScore;
 
     }, [categories, memos]);
 
