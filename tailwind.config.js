@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,13 +8,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        'theme-bg': '#fff9f5',       // Very pale warm pink/orange (Main Background)
-        'theme-bg-soft': '#ffeedd',  // Slightly darker warmth (Sidebar/Cards)
-        'theme-fg': '#5c3a3a',       // Dark reddish brown (Text)
-        'theme-accent': '#ff8e8e',   // Pastel Red (Primary Actions/Highlights)
-        'theme-secondary': '#ffcbb3', // Peach (Secondary Accents)
-        'theme-muted': '#e6d0cd',    // Muted/Disabled
-        'theme-border': '#f0dcd9',   // Borders
+        'theme-bg': 'rgb(var(--color-theme-bg) / <alpha-value>)',
+        'theme-bg-soft': 'rgb(var(--color-theme-bg-soft) / <alpha-value>)',
+        'theme-fg': 'rgb(var(--color-theme-fg) / <alpha-value>)',
+        'theme-accent': 'rgb(var(--color-theme-accent) / <alpha-value>)',
+        'theme-secondary': 'rgb(var(--color-theme-secondary) / <alpha-value>)',
+        'theme-muted': 'rgb(var(--color-theme-muted) / <alpha-value>)',
+        'theme-border': 'rgb(var(--color-theme-border) / <alpha-value>)',
+        'theme-card': 'rgb(var(--color-theme-card) / <alpha-value>)',
+        'theme-danger-hover': 'rgb(var(--color-theme-danger-hover) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['"M PLUS Rounded 1c"', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Suggested font for cute feel

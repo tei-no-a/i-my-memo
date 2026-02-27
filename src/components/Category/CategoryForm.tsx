@@ -46,7 +46,7 @@ export function CategoryForm({ onCancel, onSave }: CategoryFormProps) {
                 onChange={e => setEditName(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="カテゴリ名"
-                className="w-full bg-white border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
+                className="w-full bg-theme-card border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
             />
             <input
                 type="text"
@@ -54,7 +54,7 @@ export function CategoryForm({ onCancel, onSave }: CategoryFormProps) {
                 onChange={e => setEditAliases(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="エイリアス（カンマ区切り）"
-                className="w-full bg-white border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
+                className="w-full bg-theme-card border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
             />
             <div className="flex items-center justify-between mt-1">
                 <ColorPicker value={editColor} onChange={setEditColor} />

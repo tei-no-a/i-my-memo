@@ -83,7 +83,7 @@ export function CategoryManager({ categories, onAdd, onUpdate, onDelete }: Categ
             {/* Delete Confirmation Dialog */}
             {itemToDelete && (
                 <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-theme-bg/60 backdrop-blur-sm rounded-xl">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 border border-theme-border animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-theme-card rounded-xl shadow-xl w-full max-w-sm p-5 border border-theme-border animate-in fade-in zoom-in-95 duration-200">
                         <h3 className="text-lg font-bold text-theme-fg mb-2">Delete Category</h3>
                         <p className="text-sm text-theme-fg/70 mb-5">
                             本当に "{itemToDelete.name}" カテゴリを削除しますか？ この操作は取り消せません。

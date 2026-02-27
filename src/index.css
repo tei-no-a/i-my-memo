@@ -7,15 +7,37 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light;
+  color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --color-theme-bg: 255 249 245;
+  --color-theme-bg-soft: 255 238 221;
+  --color-theme-fg: 92 58 58;
+  --color-theme-accent: 255 142 142;
+  --color-theme-secondary: 255 203 179;
+  --color-theme-muted: 230 208 205;
+  --color-theme-border: 240 220 217;
+  --color-theme-card: 255 255 255;
+  --color-theme-danger-hover: 254 242 242;
+}
+
+.dark {
+  --color-theme-bg: 42 32 36;
+  --color-theme-bg-soft: 54 42 46;
+  --color-theme-fg: 232 213 208;
+  --color-theme-accent: 255 158 158;
+  --color-theme-secondary: 196 138 110;
+  --color-theme-muted: 74 58 62;
+  --color-theme-border: 78 62 59;
+  --color-theme-card: 54 42 46;
+  --color-theme-danger-hover: 74 42 42;
 }
 
 body {
-  @apply bg-theme-bg text-theme-fg;
+  @apply bg-theme-bg text-theme-fg transition-colors duration-200;
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
@@ -49,6 +71,7 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

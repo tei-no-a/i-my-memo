@@ -105,7 +105,7 @@ export function NoteWorkspace({
                     {isLoadingMemos ? (
                         <div className="flex flex-col gap-6 mt-4">
                             {[...Array(3)].map((_, i) => (
-                                <div key={i} className="bg-white rounded-2xl shadow-sm border border-theme-border/50 p-4 animate-pulse">
+                                <div key={i} className="bg-theme-card rounded-2xl shadow-sm border border-theme-border/50 p-4 animate-pulse">
                                     <div className="h-3 bg-theme-fg/10 rounded w-3/4 mb-3" />
                                     <div className="h-3 bg-theme-fg/10 rounded w-1/2" />
                                 </div>

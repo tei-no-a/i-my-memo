@@ -13,6 +13,8 @@ interface SettingsModalProps {
     onDeleteCategory: (id: number) => void;
     exportSettings: ExportSettings;
     onSelectExportFolder: (key: keyof ExportSettings) => Promise<void>;
+    darkMode: boolean;
+    onToggleDarkMode: (darkMode: boolean) => void;
 }
 
 type TabType = 'categories' | 'general';
@@ -25,7 +27,9 @@ export function SettingsModal({
     onUpdateCategory,
     onDeleteCategory,
     exportSettings,
-    onSelectExportFolder
+    onSelectExportFolder,
+    darkMode,
+    onToggleDarkMode
 }: SettingsModalProps) {
     const [activeTab, setActiveTab] = useState<TabType>('categories');
     const modalRef = useRef<HTMLDivElement>(null);
@@ -61,7 +65,7 @@ export function SettingsModal({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-theme-bg/60 backdrop-blur-sm animate-in fade-in duration-200">
             <div
                 ref={modalRef}
-                className="bg-white w-full max-w-lg h-[600px] max-h-[85vh] rounded-2xl shadow-2xl flex flex-col border border-theme-border/50 animate-in zoom-in-95 duration-200 overflow-hidden relative"
+                className="bg-theme-card w-full max-w-lg h-[600px] max-h-[85vh] rounded-2xl shadow-2xl flex flex-col border border-theme-border/50 animate-in zoom-in-95 duration-200 overflow-hidden relative"
             >
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-theme-border flex-shrink-0">
@@ -111,6 +115,25 @@ export function SettingsModal({
                     )}
                     {activeTab === 'general' && (
                         <div className="h-full overflow-y-auto space-y-6">
+                            <h3 className="text-base font-semibold text-theme-fg">Appearance</h3>
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only"
+                                            checked={darkMode}
+                                            onChange={(e) => onToggleDarkMode(e.target.checked)}
+                                        />
+                                        <div className={`block w-10 h-6 rounded-full transition-colors ${darkMode ? 'bg-theme-accent' : 'bg-theme-border'}`}></div>
+                                        <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${darkMode ? 'translate-x-4' : ''}`}></div>
+                                    </div>
+                                    <span className="text-sm font-medium text-theme-fg/80">Dark Mode</span>
+                                </label>
+                            </div>
+
+                            <hr className="border-theme-border/50" />
+
                             <h3 className="text-base font-semibold text-theme-fg">Export Settings</h3>
 
                             {/* メモエクスポート先 */}

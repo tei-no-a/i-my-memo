@@ -10,7 +10,7 @@ import { SPECIAL_NOTE_IDS } from './constants';
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { exportSettings, selectExportFolder } = useSettings();
+  const { exportSettings, selectExportFolder, appSettings, updateAppSettings } = useSettings();
 
   const {
     notes,
@@ -89,7 +89,7 @@ function App() {
 
       <DragOverlay dropAnimation={null}>
         {activeDragMemo ? (
-          <div className="w-80 bg-white rounded-2xl shadow-xl border border-theme-accent/30 opacity-80 p-4 text-sm text-theme-fg truncate pointer-events-none">
+          <div className="w-80 bg-theme-card rounded-2xl shadow-xl border border-theme-accent/30 opacity-80 p-4 text-sm text-theme-fg truncate pointer-events-none">
             {activeDragMemo.content || 'Empty memo'}
           </div>
         ) : null}
@@ -104,6 +104,8 @@ function App() {
         onDeleteCategory={deleteCategory}
         exportSettings={exportSettings}
         onSelectExportFolder={selectExportFolder}
+        darkMode={appSettings.darkMode}
+        onToggleDarkMode={(darkMode) => updateAppSettings({ darkMode })}
       />
     </DndContext>
   );

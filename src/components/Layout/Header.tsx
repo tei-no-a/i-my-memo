@@ -146,7 +146,7 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                                 </button>
                                 <button
                                     onClick={handleDelete}
-                                    className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                    className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-theme-danger-hover flex items-center gap-2 transition-colors"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                     ノートを削除
@@ -161,7 +161,7 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                         {isTrashNote && (
                             <button
                                 onClick={handleEmptyTrash}
-                                className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-theme-danger-hover flex items-center gap-2 transition-colors"
                             >
                                 <Trash2 className="w-4 h-4" />
                                 ゴミ箱を空にする

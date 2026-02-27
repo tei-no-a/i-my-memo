@@ -5,3 +5,9 @@ export interface ExportSettings {
     /** ノートエクスポート先フォルダのパス */
     noteExportDir: string;
 }
+
+/** アプリ全般の設定 */
+export interface AppSettings {
+    /** ダークモードが有効かどうか */
+    darkMode: boolean;
+}

@@ -80,7 +80,7 @@ export function CategoryItem({
                             onChange={e => setEditName(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="カテゴリ名"
-                            className="flex-1 bg-white border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
+                            className="flex-1 bg-theme-card border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
                         />
                     </div>
                     <div className="flex gap-2">
@@ -90,7 +90,7 @@ export function CategoryItem({
                             onChange={e => setEditAliases(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="エイリアス（カンマ区切り）"
-                            className="flex-1 bg-white border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
+                            className="flex-1 bg-theme-card border border-theme-border rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent/50"
                         />
                     </div>
                     <div className="flex items-center justify-between mt-1">
@@ -140,7 +140,7 @@ export function CategoryItem({
                         </button>
                         <button
                             onClick={onDeleteRequest}
-                            className="p-1.5 rounded-md text-theme-fg/40 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            className="p-1.5 rounded-md text-theme-fg/40 hover:text-red-500 hover:bg-theme-danger-hover transition-colors"
                             title="削除"
                             aria-label="カテゴリを削除"
                         >
