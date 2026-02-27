@@ -1,0 +1,12 @@
+/** アクションの種類を文字列ユニオンで定義 */
+export type ActionName = 'createMemo' | 'exportNote' | 'exportMemo' | 'deleteMemo';
+
+
+/** キーバインドの1エントリ */
+export interface KeyBinding {
+    key: string;        // KeyboardEvent.key の値（例: 'Enter', 'd'）
+    ctrlKey?: boolean;
+    shiftKey?: boolean;
+    altKey?: boolean;
+    action: ActionName;
+}

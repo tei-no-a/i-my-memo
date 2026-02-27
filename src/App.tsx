@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { Sidebar } from './components/Layout/Sidebar';
 import { NoteWorkspace } from './components/Note/NoteWorkspace';
@@ -6,7 +6,8 @@ import { useWorkspace } from './hooks/useWorkspace';
 import { useSettings } from './hooks/useSettings';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { SettingsModal } from './components/Layout/SettingsModal';
-import { SPECIAL_NOTE_IDS } from './constants';
+import { SPECIAL_NOTE_IDS, DEFAULT_KEYBINDINGS } from './constants';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -48,6 +49,22 @@ function App() {
   } = useDragAndDrop({ memos, activeNote, activeNoteId, reorderMemos, moveMemoToNote });
 
   const isSpecialNote = activeNoteId === SPECIAL_NOTE_IDS.BOARD || activeNoteId === SPECIAL_NOTE_IDS.TRASH;
+
+  const actionHandlers = useMemo(() => ({
+    createMemo,
+    exportMemo: () => {
+      if (memos.length > 0) {
+        exportMemo(memos[memos.length - 1].id);
+      }
+    },
+    deleteMemo: () => {
+      if (memos.length > 0) {
+        deleteMemo(memos[memos.length - 1].id);
+      }
+    },
+  }), [createMemo, exportMemo, deleteMemo, memos]);
+
+  useKeyboardShortcuts(DEFAULT_KEYBINDINGS, actionHandlers, !isSettingsOpen);
 
   return (
     <DndContext
