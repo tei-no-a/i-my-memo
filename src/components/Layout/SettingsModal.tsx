@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Settings2, Tags } from 'lucide-react';
+import { X, Settings2, Tags, FolderOpen } from 'lucide-react';
+import { open } from '@tauri-apps/plugin-dialog';
 import type { Category, CategoryColor } from '../../types/category';
+import type { ExportSettings } from '../../types/settings';
 import { CategoryManager } from '../Category/CategoryManager';
 
 interface SettingsModalProps {
@@ -10,6 +12,8 @@ interface SettingsModalProps {
     onAddCategory: (name: string, color: CategoryColor, aliases: string[]) => void;
     onUpdateCategory: (id: number, updater: (cat: Category) => Partial<Category>) => void;
     onDeleteCategory: (id: number) => void;
+    exportSettings: ExportSettings;
+    onUpdateExportSettings: (update: Partial<ExportSettings>) => Promise<void>;
 }
 
 type TabType = 'categories' | 'general';
@@ -20,7 +24,9 @@ export function SettingsModal({
     categories,
     onAddCategory,
     onUpdateCategory,
-    onDeleteCategory
+    onDeleteCategory,
+    exportSettings,
+    onUpdateExportSettings
 }: SettingsModalProps) {
     const [activeTab, setActiveTab] = useState<TabType>('categories');
     const modalRef = useRef<HTMLDivElement>(null);
@@ -44,11 +50,18 @@ export function SettingsModal({
             }
         };
         if (isOpen) {
-            // Use mousedown instead of click to prevent issues with text selection dragging outside
             document.addEventListener('mousedown', handleClickOutside);
         }
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, onClose]);
+
+    /** フォルダ選択ダイアログを表示 */
+    const selectFolder = async (key: keyof ExportSettings) => {
+        const selected = await open({ directory: true, title: 'エクスポート先フォルダを選択' });
+        if (selected) {
+            await onUpdateExportSettings({ [key]: selected });
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -75,8 +88,8 @@ export function SettingsModal({
                     <button
                         onClick={() => setActiveTab('categories')}
                         className={`flex items-center gap-2 py-3 border-b-2 transition-colors text-sm font-medium ${activeTab === 'categories'
-                                ? 'border-theme-accent text-theme-accent'
-                                : 'border-transparent text-theme-fg/60 hover:text-theme-fg'
+                            ? 'border-theme-accent text-theme-accent'
+                            : 'border-transparent text-theme-fg/60 hover:text-theme-fg'
                             }`}
                     >
                         <Tags className="w-4 h-4" />
@@ -85,8 +98,8 @@ export function SettingsModal({
                     <button
                         onClick={() => setActiveTab('general')}
                         className={`flex items-center gap-2 py-3 border-b-2 transition-colors text-sm font-medium ${activeTab === 'general'
-                                ? 'border-theme-accent text-theme-accent'
-                                : 'border-transparent text-theme-fg/60 hover:text-theme-fg'
+                            ? 'border-theme-accent text-theme-accent'
+                            : 'border-transparent text-theme-fg/60 hover:text-theme-fg'
                             }`}
                     >
                         <Settings2 className="w-4 h-4" />
@@ -105,10 +118,56 @@ export function SettingsModal({
                         />
                     )}
                     {activeTab === 'general' && (
-                        <div className="h-full flex flex-col items-center justify-center text-center text-theme-fg/40 space-y-2">
-                            <Settings2 className="w-12 h-12 opacity-20 mb-2" />
-                            <p className="font-medium text-theme-fg/60">General Settings</p>
-                            <p className="text-sm">These settings are currently under construction.</p>
+                        <div className="h-full overflow-y-auto space-y-6">
+                            <h3 className="text-base font-semibold text-theme-fg">Export Settings</h3>
+
+                            {/* メモエクスポート先 */}
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-theme-fg/70">
+                                    Memo Export Folder
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 px-3 py-2 bg-theme-bg-soft rounded-lg text-sm text-theme-fg/80 truncate min-h-[38px] flex items-center border border-theme-border/50">
+                                        {exportSettings.memoExportDir || (
+                                            <span className="text-theme-fg/30 italic">未設定</span>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => selectFolder('memoExportDir')}
+                                        className="flex items-center gap-1.5 px-3 py-2 bg-theme-accent/10 text-theme-accent rounded-lg hover:bg-theme-accent/20 transition-colors text-sm font-medium flex-shrink-0"
+                                    >
+                                        <FolderOpen className="w-4 h-4" />
+                                        選択
+                                    </button>
+                                </div>
+                                <p className="text-xs text-theme-fg/40">
+                                    メモのエクスポート先フォルダを指定します。
+                                </p>
+                            </div>
+
+                            {/* ノートエクスポート先 */}
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-theme-fg/70">
+                                    Note Export Folder
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 px-3 py-2 bg-theme-bg-soft rounded-lg text-sm text-theme-fg/80 truncate min-h-[38px] flex items-center border border-theme-border/50">
+                                        {exportSettings.noteExportDir || (
+                                            <span className="text-theme-fg/30 italic">未設定</span>
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => selectFolder('noteExportDir')}
+                                        className="flex items-center gap-1.5 px-3 py-2 bg-theme-accent/10 text-theme-accent rounded-lg hover:bg-theme-accent/20 transition-colors text-sm font-medium flex-shrink-0"
+                                    >
+                                        <FolderOpen className="w-4 h-4" />
+                                        選択
+                                    </button>
+                                </div>
+                                <p className="text-xs text-theme-fg/40">
+                                    ノートのエクスポート先フォルダを指定します。
+                                </p>
+                            </div>
                         </div>
                     )}
                 </div>

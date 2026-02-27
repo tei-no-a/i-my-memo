@@ -20,9 +20,11 @@ interface NoteWorkspaceProps {
     onUpdateMemo: (id: string, content: string) => void;
     onDuplicateMemo: (id: string) => void;
     onDeleteMemo: (id: string) => void;
+    onExportMemo: (id: string) => void;
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
     onEmptyTrash: () => void;
+    onExportNote: () => void;
 }
 
 export function NoteWorkspace({
@@ -39,9 +41,11 @@ export function NoteWorkspace({
     onUpdateMemo,
     onDuplicateMemo,
     onDeleteMemo,
+    onExportMemo,
     isTrashNote,
     onReturnToBoard,
-    onEmptyTrash
+    onEmptyTrash,
+    onExportNote
 }: NoteWorkspaceProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const scrolledMemoIdRef = useRef<string | null>(null);
@@ -70,6 +74,7 @@ export function NoteWorkspace({
                 onRenameNote={onRenameNote}
                 isTrashNote={isTrashNote}
                 onEmptyTrash={onEmptyTrash}
+                onExportNote={onExportNote}
             />
 
             {!isSpecialNote && (
@@ -100,6 +105,7 @@ export function NoteWorkspace({
                             onUpdateMemo={onUpdateMemo}
                             onDuplicateMemo={onDuplicateMemo}
                             onDeleteMemo={onDeleteMemo}
+                            onExportMemo={onExportMemo}
                             isTrashNote={isTrashNote}
                             onReturnToBoard={onReturnToBoard}
                         />

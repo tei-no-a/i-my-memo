@@ -163,6 +163,29 @@ export function useNotes() {
         return found;
     }, []);
 
+    /** ノート削除（メモをTrashに移動するバージョン、エクスポート後用） */
+    const deleteNoteToTrash = useCallback((noteId: string): boolean => {
+        if (noteId === SPECIAL_NOTE_IDS.BOARD || noteId === SPECIAL_NOTE_IDS.TRASH) {
+            return false;
+        }
+
+        let found = false;
+        setNotes(prev => {
+            const targetNote = prev.find(n => n.id === noteId);
+            if (!targetNote) {
+                return prev;
+            }
+            found = true;
+            return prev
+                .filter(n => n.id !== noteId)
+                .map(n => n.id === SPECIAL_NOTE_IDS.TRASH
+                    ? { ...n, memoIds: [...n.memoIds, ...targetNote.memoIds], updatedAt: new Date().toISOString() }
+                    : n
+                );
+        });
+        return found;
+    }, []);
+
     const activeNote = notes.find(n => n.id === activeNoteId) || DEFAULT_NOTES[0];
 
     return {
@@ -178,6 +201,7 @@ export function useNotes() {
         addNote,
         renameNote,
         toggleCategory,
-        deleteNote
+        deleteNote,
+        deleteNoteToTrash
     };
 }

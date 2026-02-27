@@ -3,12 +3,14 @@ import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { Sidebar } from './components/Layout/Sidebar';
 import { NoteWorkspace } from './components/Note/NoteWorkspace';
 import { useWorkspace } from './hooks/useWorkspace';
+import { useSettings } from './hooks/useSettings';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { SettingsModal } from './components/Layout/SettingsModal';
 import { SPECIAL_NOTE_IDS } from './constants';
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { exportSettings, updateExportSettings } = useSettings();
 
   const {
     notes,
@@ -30,10 +32,12 @@ function App() {
     duplicateMemo,
     updateMemo,
     deleteMemo,
+    exportMemo,
+    exportNote,
     emptyTrash,
     reorderMemos,
     moveMemoToNote
-  } = useWorkspace();
+  } = useWorkspace(exportSettings);
 
   const {
     activeDragMemo,
@@ -76,7 +80,9 @@ function App() {
           onUpdateMemo={updateMemo}
           onDuplicateMemo={duplicateMemo}
           onDeleteMemo={deleteMemo}
+          onExportMemo={exportMemo}
           onEmptyTrash={emptyTrash}
+          onExportNote={exportNote}
           onReturnToBoard={(memoId) => moveMemoToNote(memoId, SPECIAL_NOTE_IDS.BOARD)}
         />
       </div>
@@ -96,6 +102,8 @@ function App() {
         onAddCategory={addCategory}
         onUpdateCategory={updateCategory}
         onDeleteCategory={deleteCategory}
+        exportSettings={exportSettings}
+        onUpdateExportSettings={updateExportSettings}
       />
     </DndContext>
   );

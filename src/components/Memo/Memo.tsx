@@ -12,6 +12,7 @@ interface MemoProps {
     onUpdate: (id: string, content: string) => void;
     onDuplicate: (id: string) => void;
     onDelete: (id: string) => void;
+    onExport: (id: string) => void;
     autoFocus?: boolean;
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
@@ -19,7 +20,7 @@ interface MemoProps {
 
 const MENU_BUTTON_CLASS = 'w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors';
 
-export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrashNote, onReturnToBoard }: MemoProps) {
+export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocus, isTrashNote, onReturnToBoard }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -89,7 +90,10 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, autoFocus, isTrash
                             ) : (
                                 <>
                                     <button
-                                        onClick={() => setIsMenuOpen(false)}
+                                        onClick={() => {
+                                            onExport(data.id);
+                                            setIsMenuOpen(false);
+                                        }}
                                         className={MENU_BUTTON_CLASS}
                                     >
                                         エクスポート

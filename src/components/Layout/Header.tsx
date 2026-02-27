@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { Menu, MoreVertical, Trash2, Pencil } from 'lucide-react';
+import { Menu, MoreVertical, Trash2, Pencil, Download } from 'lucide-react';
 import { DropdownMenu } from '../Layout/DropdownMenu';
 
 interface HeaderProps {
@@ -10,9 +10,10 @@ interface HeaderProps {
     onRenameNote?: (newTitle: string) => void;
     isTrashNote?: boolean;
     onEmptyTrash?: () => void;
+    onExportNote?: () => void;
 }
 
-export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote, isTrashNote, onEmptyTrash }: HeaderProps) {
+export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote, isTrashNote, onEmptyTrash, onExportNote }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(title);
@@ -134,13 +135,22 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                             </button>
                         )}
                         {canDelete && (
-                            <button
-                                onClick={handleDelete}
-                                className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                                ノートを削除
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => { onExportNote?.(); setIsMenuOpen(false); }}
+                                    className="w-full text-left px-4 py-2.5 text-sm text-theme-fg hover:bg-theme-bg-soft flex items-center gap-2 transition-colors"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    エクスポート
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                    ノートを削除
+                                </button>
+                            </>
                         )}
                         {!canDelete && !canRename && !isTrashNote && (
                             <div className="px-4 py-2 text-xs text-theme-fg/40 text-center">

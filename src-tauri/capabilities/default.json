@@ -13,6 +13,7 @@
     "fs:allow-remove",
     "fs:allow-read-dir",
     "fs:allow-exists",
+    "dialog:default",
     {
       "identifier": "fs:scope",
       "allow": [
@@ -24,6 +25,9 @@
         },
         {
           "path": "$APPLOCALDATA/**"
+        },
+        {
+          "path": "$HOME/**"
         }
       ]
     }

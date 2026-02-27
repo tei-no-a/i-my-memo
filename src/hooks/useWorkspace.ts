@@ -3,9 +3,11 @@ import { useCategories } from './useCategories';
 import { useMemos } from './useMemos';
 import { useNotes } from './useNotes';
 import { SPECIAL_NOTE_IDS } from '../constants';
+import { exportMemo as exportMemoToFile, exportNote as exportNoteToFile } from '../utils/export';
 import type { MemoData } from '../types';
+import type { ExportSettings } from '../types';
 
-export function useWorkspace() {
+export function useWorkspace(exportSettings?: ExportSettings) {
     const {
         notes,
         activeNoteId,
@@ -19,7 +21,8 @@ export function useWorkspace() {
         addNote,
         renameNote,
         toggleCategory,
-        deleteNote: deleteNoteRaw
+        deleteNote: deleteNoteRaw,
+        deleteNoteToTrash
     } = useNotes();
 
     const {
@@ -111,9 +114,56 @@ export function useWorkspace() {
         }
     }, [activeNoteId, activeNote.memoIds, deleteMemoFile, reorderMemos]);
 
-    // [Feature Extension Point]: exportMemo
-    // Tauriの @tauri-apps/plugin-dialog (save) で保存先を取得し、
-    // plugin-fs (writeTextFile) で対象メモの内容を出力する想定。
+    // メモエクスポート: フォーマット→書き出し→Trash移動
+    const exportMemo = useCallback(async (memoId: string) => {
+        if (!exportSettings?.memoExportDir) {
+            alert('エクスポート先フォルダが未設定です。\nSettings > General からメモエクスポート先フォルダを設定してください。');
+            return;
+        }
+
+        // loadedMemos からメモ内容を取得
+        const memo = loadedMemos.find(m => m.id === memoId);
+        if (!memo) {
+            console.error('Memo not found:', memoId);
+            return;
+        }
+
+        const success = await exportMemoToFile(memoId, memo.content, exportSettings.memoExportDir);
+        if (success) {
+            // 成功時はメモをTrashに移動
+            await moveMemoToNoteRaw(activeNoteId, SPECIAL_NOTE_IDS.TRASH, memoId);
+        } else {
+            alert('エクスポートに失敗しました。');
+        }
+    }, [exportSettings?.memoExportDir, loadedMemos, moveMemoToNoteRaw, activeNoteId]);
+
+    // ノートエクスポート: フォーマット→書き出し→ノート削除(メモをTrash移動)→Board遷移
+    const exportNoteHandler = useCallback(async () => {
+        if (!exportSettings?.noteExportDir) {
+            alert('エクスポート先フォルダが未設定です。\nSettings > General からノートエクスポート先フォルダを設定してください。');
+            return;
+        }
+
+        // ノート内のメモをloadedMemosから取得
+        const noteMemos = activeNote.memoIds
+            .map(id => loadedMemos.find(m => m.id === id))
+            .filter((m): m is MemoData => m !== undefined);
+
+        const success = await exportNoteToFile(
+            activeNote,
+            noteMemos,
+            categories,
+            exportSettings.noteExportDir
+        );
+
+        if (success) {
+            // ノートを削除し、メモをTrashに移動
+            deleteNoteToTrash(activeNoteId);
+            selectNote(SPECIAL_NOTE_IDS.BOARD);
+        } else {
+            alert('ノートのエクスポートに失敗しました。');
+        }
+    }, [exportSettings?.noteExportDir, activeNote, loadedMemos, categories, deleteNoteToTrash, activeNoteId, selectNote]);
 
     const deleteNote = useCallback((noteId: string) => {
         const deleted = deleteNoteRaw(noteId);
@@ -152,6 +202,8 @@ export function useWorkspace() {
         duplicateMemo,
         updateMemo,
         deleteMemo,
+        exportMemo,
+        exportNote: exportNoteHandler,
         emptyTrash,
         deleteNote,
         // DnD operations
