@@ -19,7 +19,7 @@ export default {
         'theme-danger-hover': 'rgb(var(--color-theme-danger-hover) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['"M PLUS Rounded 1c"', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Suggested font for cute feel
+        sans: ['"Zen Maru Gothic"', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Suggested font for cute feel
       }
     },
   },
