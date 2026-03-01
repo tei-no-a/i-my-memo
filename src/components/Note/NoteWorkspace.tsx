@@ -50,7 +50,7 @@ export function NoteWorkspace({
     const bottomRef = useRef<HTMLDivElement>(null);
     const scrolledMemoIdRef = useRef<string | null>(null);
 
-    const sortedCategoriesWithScore = useCategorySorter(categories, memos);
+    const sortedCategoriesWithScore = useCategorySorter(categories, memos, activeNote.title);
 
     const sortedCategories = useMemo(
         () => sortedCategoriesWithScore.map(item => item.category),

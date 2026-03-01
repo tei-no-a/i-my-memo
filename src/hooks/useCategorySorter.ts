@@ -11,13 +11,17 @@ export interface CategoryWithScore {
     score: number;
 }
 
-export function useCategorySorter(categories: Category[], memos: MemoData[]): CategoryWithScore[] {
+export function useCategorySorter(categories: Category[], memos: MemoData[], noteTitle: string = ''): CategoryWithScore[] {
     const sortedCategories = useMemo(() => {
         if (!categories || categories.length === 0) return [];
-        if (!memos || memos.length === 0) return categories.map(category => ({ category, score: 0 }));
 
-        // 1. 全メモのテキストを結合 (大文字小文字を区別せず検索するため、後でフラグiを使いますが結合はそのまま行います)
-        const allText = memos.map(m => m.content).join('\n');
+        // 1. ノートタイトルと全メモのテキストを結合
+        const memosText = (memos || []).map(m => m.content).join('\n');
+        const allText = noteTitle ? `${noteTitle}\n${memosText}` : memosText;
+
+        if (!allText.trim()) {
+            return categories.map(category => ({ category, score: 0 }));
+        }
 
         // 2. 各カテゴリごとにスコアを計算
         const categoriesWithScore = categories.map(category => {
@@ -58,7 +62,7 @@ export function useCategorySorter(categories: Category[], memos: MemoData[]): Ca
         // ソート済みの Category とスコアをセットで返す
         return categoriesWithScore;
 
-    }, [categories, memos]);
+    }, [categories, memos, noteTitle]);
 
     return sortedCategories;
 }
