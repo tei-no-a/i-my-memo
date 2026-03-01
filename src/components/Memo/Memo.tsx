@@ -47,7 +47,7 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
             group relative flex flex-col w-full
             bg-theme-card rounded-2xl shadow-sm border border-theme-border/50
             transition-all duration-200 ease-out
-            hover:shadow-md hover:-translate-y-0.5
+            hover:shadow-md
             ${isFocused ? 'ring-2 ring-theme-accent/20 border-theme-accent' : ''}
             ${isDragging ? 'opacity-50 shadow-lg scale-[1.02] z-50' : ''}
         `}
