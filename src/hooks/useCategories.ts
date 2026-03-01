@@ -39,10 +39,10 @@ export function useCategories() {
         });
     }, [categories]);
 
-    const addCategory = useCallback((name: string, color: Category['color']) => {
+    const addCategory = useCallback((name: string, color: Category['color'], aliases: string[] = []) => {
         setCategories(prev => {
             const nextId = prev.length > 0 ? Math.max(...prev.map(c => c.id)) + 1 : 1;
-            return [...prev, { id: nextId, name, color, aliases: [] }];
+            return [...prev, { id: nextId, name, color, aliases }];
         });
     }, []);
 
