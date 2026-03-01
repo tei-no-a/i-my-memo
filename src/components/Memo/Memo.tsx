@@ -122,7 +122,7 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
                 onBlur={() => setIsFocused(false)}
                 placeholder="Take a memo..."
                 autoFocus={autoFocus}
-                className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-base leading-relaxed textarea-autosize rounded-b-2xl"
+                className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-[18px] leading-relaxed textarea-autosize rounded-b-2xl"
             />
 
             {/* Footer */}
