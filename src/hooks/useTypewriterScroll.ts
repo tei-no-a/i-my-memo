@@ -56,9 +56,9 @@ export function useTypewriterScroll(scrollContainerRef: React.RefObject<HTMLElem
         // 画面（ビューポート）上でのカーソルの絶対Y座標
         const cursorAbsoluteY = rect.top + cursorRelativeY;
 
-        // 目標位置（画面の下から40%付近）
+        // 目標位置（画面の下から30%付近）
         // FABや余白と被らず、スムーズに入力できる目線の高さ
-        const targetY = window.innerHeight * 0.55;
+        const targetY = window.innerHeight * 0.65;
 
         const diff = cursorAbsoluteY - targetY;
 
