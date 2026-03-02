@@ -4,6 +4,7 @@ import { CategoryBar } from '../Category/CategoryBar';
 import { MemoList } from '../Memo/MemoList';
 import { FAB } from '../Layout/FAB';
 import { useCategorySorter } from '../../hooks/useCategorySorter';
+import { useTypewriterScroll } from '../../hooks/useTypewriterScroll';
 import type { Note, Category, MemoData } from '../../types';
 
 interface NoteWorkspaceProps {
@@ -49,8 +50,11 @@ export function NoteWorkspace({
 }: NoteWorkspaceProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const scrolledMemoIdRef = useRef<string | null>(null);
+    const scrollContainerRef = useRef<HTMLElement>(null);
 
     const sortedCategoriesWithScore = useCategorySorter(categories, memos, activeNote.title);
+
+    const { focusedMemoId, handleMemoFocus, handleMemoBlur } = useTypewriterScroll(scrollContainerRef);
 
     const sortedCategories = useMemo(
         () => sortedCategoriesWithScore.map(item => item.category),
@@ -100,8 +104,11 @@ export function NoteWorkspace({
                 />
             )}
 
-            <main className="flex-1 overflow-y-auto p-6 md:p-8">
-                <div className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch pb-24">
+            <main ref={scrollContainerRef} className="flex-1 overflow-y-auto scrollbar-hide p-6 md:p-8">
+                <div
+                    className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch transition-[padding] duration-300 ease-out"
+                    style={{ paddingBottom: focusedMemoId ? '60vh' : '6rem' }}
+                >
                     {isLoadingMemos ? (
                         <div className="flex flex-col gap-6 mt-4">
                             {[...Array(3)].map((_, i) => (
@@ -123,6 +130,8 @@ export function NoteWorkspace({
                             onExportMemo={onExportMemo}
                             isTrashNote={isTrashNote}
                             onReturnToBoard={onReturnToBoard}
+                            onMemoFocus={handleMemoFocus}
+                            onMemoBlur={handleMemoBlur}
                         />
                     )}
                 </div>

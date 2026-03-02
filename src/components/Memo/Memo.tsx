@@ -16,11 +16,13 @@ interface MemoProps {
     autoFocus?: boolean;
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
+    onMemoFocus?: (id: string) => void;
+    onMemoBlur?: () => void;
 }
 
 const MENU_BUTTON_CLASS = 'w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors';
 
-export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocus, isTrashNote, onReturnToBoard }: MemoProps) {
+export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocus, isTrashNote, onReturnToBoard, onMemoFocus, onMemoBlur }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -118,8 +120,14 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
             <textarea
                 value={data.content}
                 onChange={(e) => onUpdate(data.id, e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onFocus={() => {
+                    setIsFocused(true);
+                    onMemoFocus?.(data.id);
+                }}
+                onBlur={() => {
+                    setIsFocused(false);
+                    onMemoBlur?.();
+                }}
                 placeholder="Take a memo..."
                 autoFocus={autoFocus}
                 className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-[18px] leading-relaxed textarea-autosize rounded-b-2xl"

@@ -13,9 +13,11 @@ interface MemoListProps {
     onExportMemo: (id: string) => void;
     isTrashNote: boolean;
     onReturnToBoard: (id: string) => void;
+    onMemoFocus?: (id: string) => void;
+    onMemoBlur?: () => void;
 }
 
-export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, onUpdateMemo, onDuplicateMemo, onDeleteMemo, onExportMemo, isTrashNote, onReturnToBoard }: MemoListProps) {
+export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, onUpdateMemo, onDuplicateMemo, onDeleteMemo, onExportMemo, isTrashNote, onReturnToBoard, onMemoFocus, onMemoBlur }: MemoListProps) {
     if (memos.length === 0) {
         return (
             <div className="text-center text-theme-fg/40 mt-20">
@@ -40,6 +42,8 @@ export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, o
                     autoFocus={memo.id === lastCreatedId}
                     isTrashNote={isTrashNote}
                     onReturnToBoard={onReturnToBoard}
+                    onMemoFocus={onMemoFocus}
+                    onMemoBlur={onMemoBlur}
                 />
             ))}
             <div ref={bottomRef} />
