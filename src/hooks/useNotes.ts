@@ -104,6 +104,10 @@ export function useNotes() {
         updateNote(noteId, () => ({ memoIds: newMemoIds }));
     }, [updateNote]);
 
+    const reorderNotes = useCallback((newNotes: Note[]) => {
+        setNotes(newNotes);
+    }, []);
+
     const moveMemoToNote = useCallback((fromNoteId: string, toNoteId: string, memoId: string) => {
         updateMultipleNotes([
             { noteId: fromNoteId, updater: note => ({ memoIds: note.memoIds.filter(id => id !== memoId) }) },
@@ -197,6 +201,7 @@ export function useNotes() {
         insertMemoAfter,
         removeMemoFromNote,
         reorderMemos,
+        reorderNotes,
         moveMemoToNote,
         addNote,
         renameNote,

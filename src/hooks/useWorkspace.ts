@@ -18,6 +18,7 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
         insertMemoAfter,
         removeMemoFromNote,
         reorderMemos,
+        reorderNotes,
         moveMemoToNote: moveMemoToNoteRaw,
         addNote,
         renameNote,
@@ -232,6 +233,7 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
         deleteNote,
         // DnD operations
         reorderMemos,
+        reorderNotes,
         moveMemoToNote,
     };
 }

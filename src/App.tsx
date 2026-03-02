@@ -36,16 +36,18 @@ function App() {
     exportNote,
     emptyTrash,
     reorderMemos,
+    reorderNotes,
     moveMemoToNote
   } = useWorkspace(exportSettings, !isSettingsOpen);
 
   const {
     activeDragMemo,
+    activeDragNote,
     collisionDetection,
     onDragStart,
     onDragEnd,
     onDragCancel,
-  } = useDragAndDrop({ memos, activeNote, activeNoteId, reorderMemos, moveMemoToNote });
+  } = useDragAndDrop({ memos, activeNote, activeNoteId, notes, reorderMemos, reorderNotes, moveMemoToNote });
 
   const isSpecialNote = activeNoteId === SPECIAL_NOTE_IDS.BOARD || activeNoteId === SPECIAL_NOTE_IDS.TRASH;
 
@@ -91,6 +93,11 @@ function App() {
         {activeDragMemo ? (
           <div className="w-80 bg-theme-card rounded-2xl shadow-xl border border-theme-accent/30 opacity-80 p-4 text-sm text-theme-fg truncate pointer-events-none">
             {activeDragMemo.content || 'Empty memo'}
+          </div>
+        ) : activeDragNote ? (
+          <div className="w-56 bg-theme-bg-soft rounded-lg shadow-xl border border-theme-accent/30 opacity-90 px-3 py-2 text-xs text-theme-fg flex items-center gap-2 pointer-events-none">
+            <span className="w-2 h-2 rounded-full bg-theme-accent"></span>
+            {activeDragNote.title}
           </div>
         ) : null}
       </DragOverlay>
