@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import { Header } from '../Layout/Header';
 import { CategoryBar } from '../Category/CategoryBar';
 import { MemoList } from '../Memo/MemoList';
@@ -49,7 +49,6 @@ export function NoteWorkspace({
     onExportNote
 }: NoteWorkspaceProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
-    const scrolledMemoIdRef = useRef<string | null>(null);
     const scrollContainerRef = useRef<HTMLElement>(null);
 
     const sortedCategoriesWithScore = useCategorySorter(categories, memos, activeNote.title);
@@ -70,17 +69,7 @@ export function NoteWorkspace({
         [sortedCategoriesWithScore]
     );
 
-    useEffect(() => {
-        if (
-            lastCreatedId &&
-            scrolledMemoIdRef.current !== lastCreatedId &&
-            activeNote.memoIds.includes(lastCreatedId)
-        ) {
-            const el = document.getElementById(`memo-${lastCreatedId}`);
-            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            scrolledMemoIdRef.current = lastCreatedId;
-        }
-    }, [memos, lastCreatedId, activeNote]);
+
 
     return (
         <div className="flex-1 flex flex-col h-full relative min-w-0">

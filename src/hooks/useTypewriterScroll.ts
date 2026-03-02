@@ -44,7 +44,7 @@ export function useTypewriterScroll(scrollContainerRef: React.RefObject<HTMLElem
         setFocusedMemoId(null);
     }, []);
 
-    const adjustScroll = useCallback(() => {
+    const adjustScroll = useCallback((smooth: boolean = false) => {
         if (!focusedMemoId || !scrollContainerRef.current) return;
 
         const textarea = document.querySelector(`#memo-${focusedMemoId} textarea`) as HTMLTextAreaElement;
@@ -64,7 +64,7 @@ export function useTypewriterScroll(scrollContainerRef: React.RefObject<HTMLElem
 
         // ズレが数ピクセル以上ある場合のみスクロール（微小な揺れを防ぐ）
         if (Math.abs(diff) > 4) {
-            scrollContainerRef.current.scrollBy({ top: diff, behavior: 'auto' });
+            scrollContainerRef.current.scrollBy({ top: diff, behavior: smooth ? 'smooth' : 'auto' });
         }
     }, [focusedMemoId, scrollContainerRef]);
 
@@ -74,9 +74,15 @@ export function useTypewriterScroll(scrollContainerRef: React.RefObject<HTMLElem
         const textarea = document.querySelector(`#memo-${focusedMemoId} textarea`) as HTMLTextAreaElement;
         if (!textarea) return;
 
-        const handleEvent = () => {
+        const handleEvent = (e: Event) => {
+            if (e.type === 'keyup') {
+                const key = (e as KeyboardEvent).key;
+                // カーソル移動を伴うキーのみ、keyupでのスクロール調整を許可する
+                const isNavKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(key);
+                if (!isNavKey) return;
+            }
             // textareaの高さの再計算（field-sizing対応）が終わるのを待ってからスクロール調整
-            requestAnimationFrame(adjustScroll);
+            requestAnimationFrame(() => adjustScroll(false));
         };
 
         // 文字入力や改行、カーソル移動時に追従させる
@@ -84,10 +90,11 @@ export function useTypewriterScroll(scrollContainerRef: React.RefObject<HTMLElem
         textarea.addEventListener('keyup', handleEvent);
         textarea.addEventListener('click', handleEvent);
 
-        // 初回フォーカス時も少し遅らせて位置調整
-        setTimeout(adjustScroll, 50);
+        // 初回フォーカス時はスムーズに位置調整
+        const timeoutId = setTimeout(() => adjustScroll(true), 50);
 
         return () => {
+            clearTimeout(timeoutId);
             textarea.removeEventListener('input', handleEvent);
             textarea.removeEventListener('keyup', handleEvent);
             textarea.removeEventListener('click', handleEvent);

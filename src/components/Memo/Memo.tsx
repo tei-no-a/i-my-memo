@@ -1,5 +1,5 @@
 import { GripHorizontal, MoreVertical, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DND_ITEM_TYPES } from '../../constants';
@@ -25,6 +25,13 @@ const MENU_BUTTON_CLASS = 'w-full text-left px-4 py-2 text-sm text-theme-fg hove
 export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocus, isTrashNote, onReturnToBoard, onMemoFocus, onMemoBlur }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (autoFocus && textareaRef.current) {
+            textareaRef.current.focus({ preventScroll: true });
+        }
+    }, [autoFocus]);
 
     const {
         attributes,
@@ -118,6 +125,7 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
 
             {/* Content */}
             <textarea
+                ref={textareaRef}
                 value={data.content}
                 onChange={(e) => onUpdate(data.id, e.target.value)}
                 onFocus={() => {
@@ -129,7 +137,6 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
                     onMemoBlur?.();
                 }}
                 placeholder="Take a memo..."
-                autoFocus={autoFocus}
                 className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-[18px] leading-relaxed textarea-autosize rounded-b-2xl"
             />
 
