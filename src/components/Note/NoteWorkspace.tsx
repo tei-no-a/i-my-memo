@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useCallback } from 'react';
 import { Header } from '../Layout/Header';
 import { CategoryBar } from '../Category/CategoryBar';
 import { MemoList } from '../Memo/MemoList';
@@ -26,6 +26,8 @@ interface NoteWorkspaceProps {
     onReturnToBoard: (id: string) => void;
     onEmptyTrash: () => void;
     onExportNote: () => void;
+    onMemoFocus: (id: string) => void;
+    onMemoBlur: () => void;
 }
 
 export function NoteWorkspace({
@@ -46,7 +48,9 @@ export function NoteWorkspace({
     isTrashNote,
     onReturnToBoard,
     onEmptyTrash,
-    onExportNote
+    onExportNote,
+    onMemoFocus: onMemoFocusProp,
+    onMemoBlur: onMemoBlurProp
 }: NoteWorkspaceProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const scrollContainerRef = useRef<HTMLElement>(null);
@@ -54,6 +58,17 @@ export function NoteWorkspace({
     const sortedCategoriesWithScore = useCategorySorter(categories, memos, activeNote.title);
 
     const { focusedMemoId, handleMemoFocus, handleMemoBlur } = useTypewriterScroll(scrollContainerRef);
+
+    // useTypewriterScroll と App レベルの focusedMemoId を同期するラッパー
+    const wrappedMemoFocus = useCallback((id: string) => {
+        handleMemoFocus(id);
+        onMemoFocusProp(id);
+    }, [handleMemoFocus, onMemoFocusProp]);
+
+    const wrappedMemoBlur = useCallback(() => {
+        handleMemoBlur();
+        onMemoBlurProp();
+    }, [handleMemoBlur, onMemoBlurProp]);
 
     const sortedCategories = useMemo(
         () => sortedCategoriesWithScore.map(item => item.category),
@@ -119,8 +134,8 @@ export function NoteWorkspace({
                             onExportMemo={onExportMemo}
                             isTrashNote={isTrashNote}
                             onReturnToBoard={onReturnToBoard}
-                            onMemoFocus={handleMemoFocus}
-                            onMemoBlur={handleMemoBlur}
+                            onMemoFocus={wrappedMemoFocus}
+                            onMemoBlur={wrappedMemoBlur}
                         />
                     )}
                 </div>

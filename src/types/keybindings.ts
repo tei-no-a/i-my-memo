@@ -1,5 +1,5 @@
 /** アクションの種類を文字列ユニオンで定義 */
-export type ActionName = 'createMemo' | 'exportNote' | 'exportMemo' | 'deleteMemo';
+export type ActionName = 'createMemo' | 'exportMemo' | 'deleteMemo' | 'copyMemo';
 
 
 /** キーバインドの1エントリ */

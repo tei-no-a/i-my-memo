@@ -4,4 +4,5 @@ export const DEFAULT_KEYBINDINGS: KeyBinding[] = [
     { key: 'Enter', ctrlKey: true, action: 'createMemo' },
     { key: 'Enter', altKey: true, action: 'exportMemo' },
     { key: 'd', ctrlKey: true, action: 'deleteMemo' },
+    { key: 'm', ctrlKey: true, action: 'copyMemo' },
 ];

@@ -10,6 +10,7 @@ import { SPECIAL_NOTE_IDS } from './constants';
 
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [focusedMemoId, setFocusedMemoId] = useState<string | null>(null);
   const { exportSettings, selectExportFolder, appSettings, updateAppSettings } = useSettings();
 
   const {
@@ -38,7 +39,7 @@ function App() {
     reorderMemos,
     reorderNotes,
     moveMemoToNote
-  } = useWorkspace(exportSettings, !isSettingsOpen);
+  } = useWorkspace(exportSettings, !isSettingsOpen, focusedMemoId);
 
   const {
     activeDragMemo,
@@ -86,6 +87,8 @@ function App() {
           onEmptyTrash={emptyTrash}
           onExportNote={exportNote}
           onReturnToBoard={(memoId) => moveMemoToNote(memoId, SPECIAL_NOTE_IDS.BOARD)}
+          onMemoFocus={setFocusedMemoId}
+          onMemoBlur={() => setFocusedMemoId(null)}
         />
       </div>
 

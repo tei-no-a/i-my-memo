@@ -8,7 +8,7 @@ import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import type { MemoData } from '../types';
 import type { ExportSettings } from '../types';
 
-export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: boolean = true) {
+export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: boolean = true, focusedMemoId: string | null = null) {
     const {
         notes,
         activeNoteId,
@@ -197,11 +197,21 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
             }
         },
         deleteMemo: () => {
-            if (memos.length > 0) {
-                deleteMemo(memos[memos.length - 1].id);
+            if (focusedMemoId) {
+                deleteMemo(focusedMemoId);
             }
         },
-    }), [createMemo, exportMemo, deleteMemo, memos]);
+        copyMemo: () => {
+            if (focusedMemoId) {
+                const memo = memos.find(m => m.id === focusedMemoId);
+                if (memo) {
+                    navigator.clipboard.writeText(memo.content).catch(err => {
+                        console.error('Failed to copy to clipboard:', err);
+                    });
+                }
+            }
+        },
+    }), [createMemo, exportMemo, deleteMemo, memos, focusedMemoId]);
 
     useKeyboardShortcuts(DEFAULT_KEYBINDINGS, actionHandlers, allowShortcuts);
 
