@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Settings2, Tags, FolderOpen } from 'lucide-react';
+import { X, Settings2, Tags, FolderOpen, Keyboard } from 'lucide-react';
 import type { Category, CategoryColor } from '../../types/category';
 import type { ExportSettings } from '../../types/settings';
+import type { KeyBinding, ActionName } from '../../types';
 import { CategoryManager } from '../Category/CategoryManager';
+import { KeybindingSettings } from './KeybindingSettings';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -15,9 +17,12 @@ interface SettingsModalProps {
     onSelectExportFolder: (key: keyof ExportSettings) => Promise<void>;
     darkMode: boolean;
     onToggleDarkMode: (darkMode: boolean) => void;
+    keybindings: KeyBinding[];
+    onUpdateKeybinding: (action: ActionName, newBinding: Omit<KeyBinding, 'action'>) => Promise<void>;
+    onResetKeybindings: () => Promise<void>;
 }
 
-type TabType = 'categories' | 'general';
+type TabType = 'categories' | 'general' | 'shortcuts';
 
 export function SettingsModal({
     isOpen,
@@ -29,7 +34,10 @@ export function SettingsModal({
     exportSettings,
     onSelectExportFolder,
     darkMode,
-    onToggleDarkMode
+    onToggleDarkMode,
+    keybindings,
+    onUpdateKeybinding,
+    onResetKeybindings
 }: SettingsModalProps) {
     const [activeTab, setActiveTab] = useState<TabType>('categories');
     const modalRef = useRef<HTMLDivElement>(null);
@@ -100,6 +108,16 @@ export function SettingsModal({
                     >
                         <Settings2 className="w-4 h-4" />
                         General
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('shortcuts')}
+                        className={`flex items-center gap-2 py-3 border-b-2 transition-colors text-sm font-medium ${activeTab === 'shortcuts'
+                            ? 'border-theme-accent text-theme-accent'
+                            : 'border-transparent text-theme-fg/60 hover:text-theme-fg'
+                            }`}
+                    >
+                        <Keyboard className="w-4 h-4" />
+                        Shortcuts
                     </button>
                 </div>
 
@@ -184,6 +202,13 @@ export function SettingsModal({
                                 </p>
                             </div>
                         </div>
+                    )}
+                    {activeTab === 'shortcuts' && (
+                        <KeybindingSettings
+                            keybindings={keybindings}
+                            onUpdateKeybinding={onUpdateKeybinding}
+                            onResetKeybindings={onResetKeybindings}
+                        />
                     )}
                 </div>
             </div>

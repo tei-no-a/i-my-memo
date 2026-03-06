@@ -38,7 +38,10 @@ function App() {
     emptyTrash,
     reorderMemos,
     reorderNotes,
-    moveMemoToNote
+    moveMemoToNote,
+    keybindings,
+    updateKeybinding,
+    resetKeybindings
   } = useWorkspace(exportSettings, !isSettingsOpen, focusedMemoId);
 
   const {
@@ -116,6 +119,9 @@ function App() {
         onSelectExportFolder={selectExportFolder}
         darkMode={appSettings.darkMode}
         onToggleDarkMode={(darkMode) => updateAppSettings({ darkMode })}
+        keybindings={keybindings}
+        onUpdateKeybinding={updateKeybinding}
+        onResetKeybindings={resetKeybindings}
       />
     </DndContext>
   );

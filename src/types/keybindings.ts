@@ -10,3 +10,9 @@ export interface KeyBinding {
     altKey?: boolean;
     action: ActionName;
 }
+
+/** keybinding.json 全体の型 */
+export interface KeybindingConfig {
+    version: number;
+    bindings: KeyBinding[];
+}

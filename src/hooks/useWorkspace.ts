@@ -2,13 +2,15 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { useCategories } from './useCategories';
 import { useMemos } from './useMemos';
 import { useNotes } from './useNotes';
-import { SPECIAL_NOTE_IDS, DEFAULT_KEYBINDINGS } from '../constants';
+import { SPECIAL_NOTE_IDS } from '../constants';
+import { useKeybindings } from './useKeybindings';
 import { exportMemo as exportMemoToFile, exportNote as exportNoteToFile } from '../utils/export';
 import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import type { MemoData } from '../types';
 import type { ExportSettings } from '../types';
 
 export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: boolean = true, focusedMemoId: string | null = null) {
+    const { keybindings, updateKeybinding, resetKeybindings } = useKeybindings();
     const {
         notes,
         activeNoteId,
@@ -213,7 +215,7 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
         },
     }), [createMemo, exportMemo, deleteMemo, memos, focusedMemoId]);
 
-    useKeyboardShortcuts(DEFAULT_KEYBINDINGS, actionHandlers, allowShortcuts);
+    useKeyboardShortcuts(keybindings, actionHandlers, allowShortcuts);
 
     return {
         // Notes
@@ -245,6 +247,10 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
         reorderMemos,
         reorderNotes,
         moveMemoToNote,
+        // Keybindings
+        keybindings,
+        updateKeybinding,
+        resetKeybindings,
     };
 }
 
