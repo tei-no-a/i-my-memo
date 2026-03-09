@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { StickyNote, Plus, Settings, Trash2 } from 'lucide-react';
 import { SPECIAL_NOTE_IDS, DND_PREFIX } from '../../constants';
@@ -11,18 +11,18 @@ interface SidebarProps {
     activeNoteId: string;
     onSelectNote: (noteId: string) => void;
     onAddNote: (title: string) => void;
+    isCreatingNote: boolean;
+    onSetCreatingNote: (value: boolean) => void;
     onOpenSettings: () => void;
 }
 
-export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote, onOpenSettings }: SidebarProps) {
-    const [isCreating, setIsCreating] = useState(false);
-
-    const handleStartCreating = () => setIsCreating(true);
-    const handleCancelCreating = () => setIsCreating(false);
+export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote, isCreatingNote, onSetCreatingNote, onOpenSettings }: SidebarProps) {
+    const handleStartCreating = () => onSetCreatingNote(true);
+    const handleCancelCreating = () => onSetCreatingNote(false);
 
     const handleAddNote = (title: string) => {
         onAddNote(title);
-        setIsCreating(false);
+        onSetCreatingNote(false);
     };
 
     // 特殊ノートを除外したユーザーノート
@@ -77,7 +77,7 @@ export function Sidebar({ notes, activeNoteId, onSelectNote, onAddNote, onOpenSe
                     <span className="text-xs">New Note</span>
                 </button>
 
-                {isCreating && (
+                {isCreatingNote && (
                     <NoteInput onAdd={handleAddNote} onCancel={handleCancelCreating} />
                 )}
             </div>

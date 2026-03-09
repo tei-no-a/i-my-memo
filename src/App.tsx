@@ -11,6 +11,7 @@ import { SPECIAL_NOTE_IDS } from './constants';
 function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [focusedMemoId, setFocusedMemoId] = useState<string | null>(null);
+  const [isCreatingNote, setIsCreatingNote] = useState(false);
   const { exportSettings, selectExportFolder, appSettings, updateAppSettings } = useSettings();
 
   const {
@@ -42,7 +43,7 @@ function App() {
     keybindings,
     updateKeybinding,
     resetKeybindings
-  } = useWorkspace(exportSettings, !isSettingsOpen, focusedMemoId);
+  } = useWorkspace(exportSettings, !isSettingsOpen, focusedMemoId, () => setIsCreatingNote(true));
 
   const {
     activeDragMemo,
@@ -68,6 +69,8 @@ function App() {
           activeNoteId={activeNoteId}
           onSelectNote={selectNote}
           onAddNote={addNote}
+          isCreatingNote={isCreatingNote}
+          onSetCreatingNote={setIsCreatingNote}
           onOpenSettings={() => setIsSettingsOpen(true)}
         />
 

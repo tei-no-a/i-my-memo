@@ -9,7 +9,7 @@ import { useKeyboardShortcuts } from './useKeyboardShortcuts';
 import type { MemoData } from '../types';
 import type { ExportSettings } from '../types';
 
-export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: boolean = true, focusedMemoId: string | null = null) {
+export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: boolean = true, focusedMemoId: string | null = null, onStartCreatingNote?: () => void) {
     const { keybindings, updateKeybinding, resetKeybindings } = useKeybindings();
     const {
         notes,
@@ -213,7 +213,13 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
                 }
             }
         },
-    }), [createMemo, exportMemo, deleteMemo, memos, focusedMemoId]);
+        addNote: () => {
+            onStartCreatingNote?.();
+        },
+        openBoard: () => {
+            selectNote(SPECIAL_NOTE_IDS.BOARD);
+        },
+    }), [createMemo, exportMemo, deleteMemo, memos, focusedMemoId, onStartCreatingNote, selectNote]);
 
     useKeyboardShortcuts(keybindings, actionHandlers, allowShortcuts);
 
