@@ -7,6 +7,8 @@ const ACTION_LABELS: Record<ActionName, string> = {
     exportMemo: 'メモをエクスポート',
     deleteMemo: 'メモを削除',
     copyMemo: 'メモ全文をコピー',
+    addNote: 'ノートを追加',
+    openBoard: 'ボードを開く',
 };
 
 /** KeyBinding を人間が読める文字列にフォーマット */
