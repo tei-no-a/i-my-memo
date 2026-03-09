@@ -70,18 +70,24 @@ export function sanitizeFileName(name: string): string {
 // ノートエクスポート
 // ===================================================
 
+/** Date から共通の日付パーツを取得 */
+function formatDateParts(d: Date) {
+    return {
+        yyyy: d.getFullYear(),
+        mm: String(d.getMonth() + 1).padStart(2, '0'),
+        dd: String(d.getDate()).padStart(2, '0'),
+        hh: String(d.getHours()).padStart(2, '0'),
+        min: String(d.getMinutes()).padStart(2, '0'),
+    };
+}
+
 /**
  * ノートの createdAt からフロントマター用の日時文字列を生成
  * @example formatDateForFrontmatter('2026-02-27T11:10:00Z') → '2026-02-27 11:10'
  */
 function formatDateForFrontmatter(isoString?: string): string {
     if (!isoString) return '';
-    const d = new Date(isoString);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    const hh = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
+    const { yyyy, mm, dd, hh, min } = formatDateParts(new Date(isoString));
     return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
 }
 
@@ -90,12 +96,7 @@ function formatDateForFrontmatter(isoString?: string): string {
  * @example formatMemoDateHeader('2026-02-27T11:10:00Z') → '##### [[2026-02-27]] 11:10'
  */
 function formatMemoDateHeader(createdAt: string): string {
-    const d = new Date(createdAt);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    const hh = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
+    const { yyyy, mm, dd, hh, min } = formatDateParts(new Date(createdAt));
     return `#####  [[${yyyy}-${mm}-${dd}]] ${hh}:${min}`;
 }
 

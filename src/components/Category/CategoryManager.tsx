@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import type { Category, CategoryColor } from '../../types/category';
 import { CategoryItem } from './CategoryItem';
 import { CategoryForm } from './CategoryForm';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 interface CategoryManagerProps {
     categories: Category[];
@@ -81,30 +82,16 @@ export function CategoryManager({ categories, onAdd, onUpdate, onDelete }: Categ
             )}
 
             {/* Delete Confirmation Dialog */}
-            {itemToDelete && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-theme-bg/60 backdrop-blur-sm rounded-xl">
-                    <div className="bg-theme-card rounded-xl shadow-xl w-full max-w-sm p-5 border border-theme-border animate-in fade-in zoom-in-95 duration-200">
-                        <h3 className="text-lg font-bold text-theme-fg mb-2">Delete Category</h3>
-                        <p className="text-sm text-theme-fg/70 mb-5">
-                            本当に "{itemToDelete.name}" カテゴリを削除しますか？ この操作は取り消せません。
-                        </p>
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => setItemToDelete(null)}
-                                className="px-4 py-2 text-sm font-medium text-theme-fg hover:bg-theme-bg-soft rounded-lg transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm"
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                isOpen={itemToDelete !== null}
+                title="Delete Category"
+                message={<>本当に "{itemToDelete?.name}" カテゴリを削除しますか？ この操作は取り消せません。</>}
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                isDestructive={true}
+                onConfirm={confirmDelete}
+                onCancel={() => setItemToDelete(null)}
+            />
         </div>
     );
 }

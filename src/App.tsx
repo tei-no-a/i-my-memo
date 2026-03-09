@@ -5,7 +5,7 @@ import { NoteWorkspace } from './components/Note/NoteWorkspace';
 import { useWorkspace } from './hooks/useWorkspace';
 import { useSettings } from './hooks/useSettings';
 import { useDragAndDrop } from './hooks/useDragAndDrop';
-import { SettingsModal } from './components/Layout/SettingsModal';
+import { SettingsModal } from './components/Settings/SettingsModal';
 import { SPECIAL_NOTE_IDS } from './constants';
 
 function App() {

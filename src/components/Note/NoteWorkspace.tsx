@@ -2,7 +2,7 @@ import { useRef, useMemo, useCallback } from 'react';
 import { Header } from '../Layout/Header';
 import { CategoryBar } from '../Category/CategoryBar';
 import { MemoList } from '../Memo/MemoList';
-import { FAB } from '../Layout/FAB';
+import { FAB } from '../ui/FAB';
 import { useCategorySorter } from '../../hooks/useCategorySorter';
 import { useTypewriterScroll } from '../../hooks/useTypewriterScroll';
 import type { Note, Category, MemoData } from '../../types';

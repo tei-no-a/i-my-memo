@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { MoreVertical, Trash2, Pencil, Download } from 'lucide-react';
-import { DropdownMenu } from '../Layout/DropdownMenu';
-import { ConfirmDialog } from './ConfirmDialog';
+import { DropdownMenu } from '../ui/DropdownMenu';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 interface HeaderProps {
     title: string;

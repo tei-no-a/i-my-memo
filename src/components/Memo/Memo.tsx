@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DND_ITEM_TYPES } from '../../constants';
 import type { MemoData } from '../../types';
-import { DropdownMenu } from '../Layout/DropdownMenu';
+import { DropdownMenu } from '../ui/DropdownMenu';
 
 interface MemoProps {
     data: MemoData;
