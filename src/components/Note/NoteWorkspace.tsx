@@ -97,6 +97,7 @@ export function NoteWorkspace({
                 isTrashNote={isTrashNote}
                 onEmptyTrash={onEmptyTrash}
                 onExportNote={onExportNote}
+                hasCategory={(activeNote.categories?.length ?? 0) > 0}
             />
 
             {!isSpecialNote && (

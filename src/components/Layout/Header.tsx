@@ -12,13 +12,15 @@ interface HeaderProps {
     isTrashNote?: boolean;
     onEmptyTrash?: () => void;
     onExportNote?: () => void;
+    hasCategory?: boolean;
 }
 
-export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote, isTrashNote, onEmptyTrash, onExportNote }: HeaderProps) {
+export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote, isTrashNote, onEmptyTrash, onExportNote, hasCategory }: HeaderProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(title);
     const [isConfirmingEmptyTrash, setIsConfirmingEmptyTrash] = useState(false);
+    const [isConfirmingExportNoCategory, setIsConfirmingExportNoCategory] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // title が外部から変わったとき（別ノートへ切り替え）に同期
@@ -134,7 +136,14 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                         {canDelete && (
                             <>
                                 <button
-                                    onClick={() => { onExportNote?.(); setIsMenuOpen(false); }}
+                                    onClick={() => {
+                                        setIsMenuOpen(false);
+                                        if (hasCategory) {
+                                            onExportNote?.();
+                                        } else {
+                                            setIsConfirmingExportNoCategory(true);
+                                        }
+                                    }}
                                     className="w-full text-left px-4 py-2.5 text-sm text-theme-fg hover:bg-theme-bg-soft flex items-center gap-2 transition-colors"
                                 >
                                     <Download className="w-4 h-4" />
@@ -176,6 +185,19 @@ export function Header({ title, canDelete, canRename, onDeleteNote, onRenameNote
                 isDestructive={true}
                 onConfirm={confirmEmptyTrash}
                 onCancel={() => setIsConfirmingEmptyTrash(false)}
+            />
+
+            <ConfirmDialog
+                isOpen={isConfirmingExportNoCategory}
+                title="カテゴリ未設定"
+                message="このノートにカテゴリが設定されていません。カテゴリなしのままエクスポートしますか？"
+                confirmLabel="エクスポート"
+                cancelLabel="キャンセル"
+                onConfirm={() => {
+                    onExportNote?.();
+                    setIsConfirmingExportNoCategory(false);
+                }}
+                onCancel={() => setIsConfirmingExportNoCategory(false)}
             />
         </header>
     );

@@ -86,6 +86,20 @@ function formatDateForFrontmatter(isoString?: string): string {
 }
 
 /**
+ * メモの createdAt から日時ヘッダーを生成
+ * @example formatMemoDateHeader('2026-02-27T11:10:00Z') → '##### [[2026-02-27]] 11:10'
+ */
+function formatMemoDateHeader(createdAt: string): string {
+    const d = new Date(createdAt);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `#####  [[${yyyy}-${mm}-${dd}]] ${hh}:${min}`;
+}
+
+/**
  * ノート全体をMarkdown形式にフォーマット
  *
  * フォーマット:
@@ -131,8 +145,13 @@ export function formatNoteForExport(
         .filter(Boolean)
         .join(' ');
 
-    // メモ連結
-    const memoContents = memos.map(m => m.content).join('\n\n***\n\n');
+    // メモ連結（日時ヘッダー付き）
+    const memoContents = memos
+        .map(m => {
+            const dateHeader = formatMemoDateHeader(m.createdAt);
+            return `${dateHeader}\n${m.content}`;
+        })
+        .join('\n\n***\n\n');
 
     // 組み立て
     const parts = [frontmatter, heading];
