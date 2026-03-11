@@ -91,14 +91,7 @@ function formatDateForFrontmatter(isoString?: string): string {
     return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
 }
 
-/**
- * メモの createdAt から日時ヘッダーを生成
- * @example formatMemoDateHeader('2026-02-27T11:10:00Z') → '##### [[2026-02-27]] 11:10'
- */
-function formatMemoDateHeader(createdAt: string): string {
-    const { yyyy, mm, dd, hh, min } = formatDateParts(new Date(createdAt));
-    return `#####  [[${yyyy}-${mm}-${dd}]] ${hh}:${min}`;
-}
+
 
 /**
  * ノート全体をMarkdown形式にフォーマット
@@ -107,14 +100,12 @@ function formatMemoDateHeader(createdAt: string): string {
  * ```
  * ---
  * date: YYYY-MM-DD hh:mm
- * aliases:
- * title:
+ * tags:
+ *   - カテゴリ1
+ *   - カテゴリ2
  * ---
+ *
  * # ノートタイトル
- *
- * [[カテゴリ1]] [[カテゴリ2]]
- *
- * ***
  *
  * メモ本文1
  *
@@ -130,37 +121,35 @@ export function formatNoteForExport(
 ): string {
     const date = formatDateForFrontmatter(note.createdAt);
 
+    // カテゴリをタグとして取得
+    const noteCategories = note.categories || [];
+    const tagNames = noteCategories
+        .map(catId => {
+            const cat = categories.find(c => String(c.id) === catId);
+            return cat ? cat.name : null;
+        })
+        .filter(Boolean);
+
     // フロントマター
-    const frontmatter = `---\ndate: ${date}\naliases: \ntitle: \n---`;
+    let frontmatter = `---\ndate: ${date}`;
+    if (tagNames.length > 0) {
+        frontmatter += '\ntags:';
+        for (const tag of tagNames) {
+            frontmatter += `\n  - ${tag}`;
+        }
+    }
+    frontmatter += '\n---';
 
     // 見出し
     const heading = `# ${note.title}`;
 
-    // カテゴリ（Wikiリンク形式）
-    const noteCategories = note.categories || [];
-    const categoryLine = noteCategories
-        .map(catId => {
-            const cat = categories.find(c => String(c.id) === catId);
-            return cat ? `[[${cat.name}]]` : null;
-        })
-        .filter(Boolean)
-        .join(' ');
-
-    // メモ連結（日時ヘッダー付き）
+    // メモ連結
     const memoContents = memos
-        .map(m => {
-            const dateHeader = formatMemoDateHeader(m.createdAt);
-            return `${dateHeader}\n${m.content}`;
-        })
+        .map(m => m.content)
         .join('\n\n***\n\n');
 
     // 組み立て
-    const parts = [frontmatter, heading];
-    if (categoryLine) {
-        parts.push(categoryLine);
-    }
-    parts.push('***');
-    parts.push(memoContents);
+    const parts = [frontmatter, heading, memoContents];
 
     return parts.join('\n\n');
 }
@@ -175,7 +164,9 @@ export async function exportNote(
     exportDir: string
 ): Promise<boolean> {
     try {
-        const fileName = `${sanitizeFileName(note.title)}.md`;
+        const { yyyy, mm, dd } = formatDateParts(new Date(note.createdAt!));
+        const yy = String(yyyy).slice(2);
+        const fileName = `${yy}${mm}${dd}_${sanitizeFileName(note.title)}.md`;
         const filePath = `${exportDir}/${fileName}`;
         const content = formatNoteForExport(note, memos, categories);
 
