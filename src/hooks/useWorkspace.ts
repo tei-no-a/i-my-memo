@@ -94,8 +94,8 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
     const actionHandlers = useMemo(() => ({
         createMemo,
         exportMemo: () => {
-            if (memos.length > 0) {
-                exportMemo(memos[memos.length - 1].id);
+            if (focusedMemoId) {
+                exportMemo(focusedMemoId);
             }
         },
         deleteMemo: () => {
