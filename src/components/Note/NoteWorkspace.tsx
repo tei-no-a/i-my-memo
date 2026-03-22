@@ -57,7 +57,7 @@ export function NoteWorkspace({
 
     const sortedCategoriesWithScore = useCategorySorter(categories, memos, activeNote.title);
 
-    const { focusedMemoId, handleMemoFocus, handleMemoBlur } = useTypewriterScroll(scrollContainerRef);
+    const { handleMemoFocus, handleMemoBlur } = useTypewriterScroll(scrollContainerRef);
 
     // useTypewriterScroll と App レベルの focusedMemoId を同期するラッパー
     const wrappedMemoFocus = useCallback((id: string) => {
@@ -111,8 +111,8 @@ export function NoteWorkspace({
 
             <main ref={scrollContainerRef} className="flex-1 overflow-y-auto scrollbar-hide p-6 md:p-8">
                 <div
-                    className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch transition-[padding] duration-300 ease-out"
-                    style={{ paddingBottom: focusedMemoId ? '60vh' : '6rem' }}
+                    className="max-w-2xl mx-auto flex flex-col gap-6 items-stretch"
+                    style={{ paddingBottom: '20vh' }}
                 >
                     {isLoadingMemos ? (
                         <div className="flex flex-col gap-6 mt-4">
