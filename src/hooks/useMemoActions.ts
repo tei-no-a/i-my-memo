@@ -45,16 +45,20 @@ export function useMemoActions({
         }
     }, [duplicateMemoFile, insertMemoAfter, activeNoteId]);
 
-    const createMemo = useCallback(async () => {
+    const createMemo = useCallback(async (afterMemoId?: string) => {
         try {
             const newMemo = await createMemoFile();
             if (newMemo) {
-                await addMemoToNote(activeNoteId, newMemo.id);
+                if (afterMemoId) {
+                    insertMemoAfter(activeNoteId, afterMemoId, newMemo.id);
+                } else {
+                    await addMemoToNote(activeNoteId, newMemo.id);
+                }
             }
         } catch (error) {
             console.error("Failed to add memo", error);
         }
-    }, [createMemoFile, addMemoToNote, activeNoteId]);
+    }, [createMemoFile, addMemoToNote, insertMemoAfter, activeNoteId]);
 
     const deleteMemo = useCallback(async (id: string) => {
         try {

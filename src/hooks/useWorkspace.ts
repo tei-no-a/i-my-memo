@@ -92,7 +92,9 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
     });
 
     const actionHandlers = useMemo(() => ({
-        createMemo,
+        createMemo: () => {
+            createMemo(focusedMemoId ?? undefined);
+        },
         exportMemo: () => {
             if (focusedMemoId) {
                 exportMemo(focusedMemoId);
