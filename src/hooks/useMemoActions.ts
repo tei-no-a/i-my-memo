@@ -106,7 +106,7 @@ export function useMemoActions({
             return;
         }
 
-        const success = await exportMemoToFile(memoId, memo.content, exportSettings.memoExportDir);
+        const success = await exportMemoToFile(memoId, memo.content, exportSettings.memoExportDir, memo.type);
         if (success) {
             // クリップボードにメモの内容をコピー
             try {

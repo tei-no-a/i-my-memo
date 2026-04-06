@@ -1,6 +1,20 @@
 import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs';
-import type { Note, MemoData } from '../types';
+import type { Note, MemoData, MemoType } from '../types';
 import type { Category } from '../types/category';
+
+/**
+ * タスクリストの内容をMarkdownチェックリスト形式に変換
+ * '[ ] text' → '- [ ] text', '[x] text' → '- [x] text'
+ */
+function formatTaskListAsMarkdown(content: string): string {
+    if (!content.trim()) return '';
+    return content.split('\n').map(line => {
+        if (line.startsWith('[ ] ') || line.startsWith('[x] ')) {
+            return `- ${line}`;
+        }
+        return line;
+    }).join('\n');
+}
 
 /**
  * メモIDから日付部分を抽出してエクスポート用ファイル名を生成
@@ -15,14 +29,15 @@ export function getMemoExportFileName(memoId: string): string {
  * メモIDから時刻を抽出し、エクスポート用フォーマットに整形
  * @example formatMemoForExport('2026-02-27-11-10-25', 'メモ本文') → '\n\n##### 11:10\nメモ本文'
  */
-export function formatMemoForExport(memoId: string, content: string): string {
+export function formatMemoForExport(memoId: string, content: string, type?: MemoType): string {
     // memoId: 'YYYY-MM-DD-HH-mm-ss' → HH:mm を取得（秒は切り捨て）
     const parts = memoId.split('-');
     const hours = parts[3] || '00';
     const minutes = parts[4] || '00';
     const time = `${hours}:${minutes}`;
 
-    return `\n\n##### ${time}\n${content}`;
+    const body = type === 'tasklist' ? formatTaskListAsMarkdown(content) : content;
+    return `\n\n##### ${time}\n${body}`;
 }
 
 /**
@@ -34,12 +49,13 @@ export function formatMemoForExport(memoId: string, content: string): string {
 export async function exportMemo(
     memoId: string,
     content: string,
-    exportDir: string
+    exportDir: string,
+    type?: MemoType
 ): Promise<boolean> {
     try {
         const fileName = getMemoExportFileName(memoId);
         const filePath = `${exportDir}/${fileName}`;
-        const formatted = formatMemoForExport(memoId, content);
+        const formatted = formatMemoForExport(memoId, content, type);
 
         // 既存ファイルの読み込みを試行
         let existingContent = '';
@@ -143,9 +159,9 @@ export function formatNoteForExport(
     // 見出し
     const heading = `# ${note.title}`;
 
-    // メモ連結
+    // メモ連結（タスクリストはMarkdownチェックリスト形式に変換）
     const memoContents = memos
-        .map(m => m.content)
+        .map(m => m.type === 'tasklist' ? formatTaskListAsMarkdown(m.content) : m.content)
         .join('\n\n***\n\n');
 
     // 組み立て
