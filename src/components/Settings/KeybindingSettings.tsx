@@ -4,6 +4,7 @@ import type { KeyBinding, ActionName } from '../../types';
 /** アクション名 → 日本語ラベル */
 const ACTION_LABELS: Record<ActionName, string> = {
     createMemo: '新規メモ作成',
+    createTaskList: 'タスクリスト作成',
     exportMemo: 'メモをエクスポート',
     deleteMemo: 'メモを削除',
     copyMemo: 'メモ全文をコピー',

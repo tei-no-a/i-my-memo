@@ -10,4 +10,5 @@ export const DEFAULT_KEYBINDINGS: KeyBinding[] = [
     { key: 'm', ctrlKey: true, action: 'copyMemo' },
     { key: 'n', ctrlKey: true, action: 'addNote' },
     { key: 'b', ctrlKey: true, action: 'openBoard' },
+    { key: 't', ctrlKey: true, action: 'createTaskList' },
 ];

@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { DND_ITEM_TYPES } from '../../constants';
 import type { MemoData } from '../../types';
 import { DropdownMenu } from '../ui/DropdownMenu';
+import { TaskListContent } from './TaskListContent';
 
 interface MemoProps {
     data: MemoData;
@@ -124,21 +125,37 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
             </div>
 
             {/* Content */}
-            <textarea
-                ref={textareaRef}
-                value={data.content}
-                onChange={(e) => onUpdate(data.id, e.target.value)}
-                onFocus={() => {
-                    setIsFocused(true);
-                    onMemoFocus?.(data.id);
-                }}
-                onBlur={() => {
-                    setIsFocused(false);
-                    onMemoBlur?.();
-                }}
-                placeholder="Take a memo..."
-                className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-[18px] leading-relaxed textarea-autosize rounded-b-2xl"
-            />
+            {data.type === 'tasklist' ? (
+                <TaskListContent
+                    content={data.content}
+                    onChange={(newContent) => onUpdate(data.id, newContent)}
+                    autoFocus={autoFocus}
+                    onFocus={() => {
+                        setIsFocused(true);
+                        onMemoFocus?.(data.id);
+                    }}
+                    onBlur={() => {
+                        setIsFocused(false);
+                        onMemoBlur?.();
+                    }}
+                />
+            ) : (
+                <textarea
+                    ref={textareaRef}
+                    value={data.content}
+                    onChange={(e) => onUpdate(data.id, e.target.value)}
+                    onFocus={() => {
+                        setIsFocused(true);
+                        onMemoFocus?.(data.id);
+                    }}
+                    onBlur={() => {
+                        setIsFocused(false);
+                        onMemoBlur?.();
+                    }}
+                    placeholder="Take a memo..."
+                    className="w-full min-h-[120px] p-4 bg-transparent resize-none focus:outline-none text-theme-fg placeholder:text-theme-fg/30 text-[18px] leading-relaxed textarea-autosize rounded-b-2xl"
+                />
+            )}
 
             {/* Footer */}
             <div className="px-4 py-2 border-t border-theme-border/30 text-[10px] font-medium text-theme-fg/30 uppercase tracking-wider flex justify-end">

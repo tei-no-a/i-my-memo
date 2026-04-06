@@ -121,6 +121,9 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
         openBoard: () => {
             selectNote(SPECIAL_NOTE_IDS.BOARD);
         },
+        createTaskList: () => {
+            createMemo(focusedMemoId ?? undefined, 'tasklist');
+        },
     }), [createMemo, exportMemo, deleteMemo, memos, focusedMemoId, onStartCreatingNote, selectNote]);
 
     useKeyboardShortcuts(keybindings, actionHandlers, allowShortcuts);

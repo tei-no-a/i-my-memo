@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { SPECIAL_NOTE_IDS } from '../constants';
 import { exportMemo as exportMemoToFile } from '../utils/export';
-import type { MemoData, ExportSettings, Note } from '../types';
+import type { MemoData, MemoType, ExportSettings, Note } from '../types';
 
 interface UseMemoActionsProps {
     activeNoteId: string;
@@ -9,7 +9,7 @@ interface UseMemoActionsProps {
     loadedMemos: MemoData[];
     exportSettings?: ExportSettings;
 
-    createMemoFile: () => Promise<MemoData | null>;
+    createMemoFile: (type?: MemoType) => Promise<MemoData | null>;
     duplicateMemoFile: (id: string) => Promise<MemoData | null>;
     deleteMemoFile: (id: string) => Promise<boolean>;
 
@@ -45,9 +45,9 @@ export function useMemoActions({
         }
     }, [duplicateMemoFile, insertMemoAfter, activeNoteId]);
 
-    const createMemo = useCallback(async (afterMemoId?: string) => {
+    const createMemo = useCallback(async (afterMemoId?: string, type?: MemoType) => {
         try {
-            const newMemo = await createMemoFile();
+            const newMemo = await createMemoFile(type);
             if (newMemo) {
                 if (afterMemoId) {
                     insertMemoAfter(activeNoteId, afterMemoId, newMemo.id);
