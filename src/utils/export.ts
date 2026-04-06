@@ -164,7 +164,7 @@ export async function exportNote(
     exportDir: string
 ): Promise<boolean> {
     try {
-        const { yyyy, mm, dd } = formatDateParts(new Date(note.createdAt!));
+        const { yyyy, mm, dd } = formatDateParts(new Date(note.updatedAt!));
         const yy = String(yyyy).slice(2);
         const fileName = `${yy}${mm}${dd}_${sanitizeFileName(note.title)}.md`;
         const filePath = `${exportDir}/${fileName}`;
