@@ -28,7 +28,7 @@ interface TaskListContentProps {
 
 export function TaskListContent({ content, onChange, autoFocus, onFocus, onBlur }: TaskListContentProps) {
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-    const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+    const blurTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     const focusIndexRef = useRef<number | null>(null);
 
     const tasks = parseTaskList(content);
