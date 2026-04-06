@@ -99,12 +99,25 @@ export function TaskListContent({ content, onChange, autoFocus, onFocus, onBlur 
         >
             {tasks.map((task, i) => (
                 <div key={i} className="flex items-center gap-3 group/task">
-                    <input
-                        type="checkbox"
-                        checked={task.checked}
-                        onChange={() => toggleCheck(i)}
-                        className="w-4 h-4 rounded cursor-pointer accent-theme-accent flex-shrink-0"
-                    />
+                    <label className="relative w-4 h-4 flex-shrink-0 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={task.checked}
+                            onChange={() => toggleCheck(i)}
+                            className="sr-only"
+                        />
+                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                            task.checked
+                                ? 'bg-theme-accent border-theme-accent'
+                                : 'bg-theme-card dark:bg-theme-bg-soft border-theme-border'
+                        }`}>
+                            {task.checked && (
+                                <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 10 8" fill="none">
+                                    <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            )}
+                        </div>
+                    </label>
                     <input
                         ref={el => { inputRefs.current[i] = el; }}
                         type="text"
