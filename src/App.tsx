@@ -86,6 +86,7 @@ function App() {
           onRenameNote={(newTitle) => renameNote(activeNoteId, newTitle)}
           onToggleCategory={(categoryId) => toggleCategory(activeNoteId, categoryId)}
           onCreateMemo={createMemo}
+          onCreateTaskList={() => createMemo(undefined, 'tasklist')}
           onUpdateMemo={updateMemo}
           onDuplicateMemo={duplicateMemo}
           onDeleteMemo={deleteMemo}

@@ -1,8 +1,9 @@
 import { useRef, useMemo, useCallback } from 'react';
+import { ListTodo } from 'lucide-react';
 import { Header } from '../Layout/Header';
 import { CategoryBar } from '../Category/CategoryBar';
 import { MemoList } from '../Memo/MemoList';
-import { FAB } from '../ui/FAB';
+import { FAB, type FABSubAction } from '../ui/FAB';
 import { useCategorySorter } from '../../hooks/useCategorySorter';
 import { useTypewriterScroll } from '../../hooks/useTypewriterScroll';
 import type { Note, Category, MemoData } from '../../types';
@@ -18,6 +19,7 @@ interface NoteWorkspaceProps {
     onRenameNote: (newTitle: string) => void;
     onToggleCategory: (categoryId: string) => void;
     onCreateMemo: () => void;
+    onCreateTaskList: () => void;
     onUpdateMemo: (id: string, content: string) => void;
     onDuplicateMemo: (id: string) => void;
     onDeleteMemo: (id: string) => void;
@@ -41,6 +43,7 @@ export function NoteWorkspace({
     onRenameNote,
     onToggleCategory,
     onCreateMemo,
+    onCreateTaskList,
     onUpdateMemo,
     onDuplicateMemo,
     onDeleteMemo,
@@ -74,6 +77,15 @@ export function NoteWorkspace({
         () => sortedCategoriesWithScore.map(item => item.category),
         [sortedCategoriesWithScore]
     );
+
+    const fabSubActions: FABSubAction[] = useMemo(() => [
+        {
+            id: 'create-tasklist',
+            icon: ListTodo,
+            label: 'タスクリスト作成',
+            onClick: onCreateTaskList,
+        },
+    ], [onCreateTaskList]);
 
     const zeroScoreCategoryIds = useMemo(
         () => new Set(
@@ -142,7 +154,7 @@ export function NoteWorkspace({
                 </div>
             </main>
 
-            <FAB onClick={onCreateMemo} />
+            <FAB onClick={onCreateMemo} subActions={fabSubActions} />
         </div>
     );
 }
