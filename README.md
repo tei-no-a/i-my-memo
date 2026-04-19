@@ -5,9 +5,11 @@
 - 対応 OS: Windows（Tauri のバンドルターゲット上は他 OS でもビルド可能）
 - 技術スタック: Tauri 2 + React 19 + TypeScript + Tailwind CSS
 
-## デモ
+## スクリーンショット・動作デモ
 
 <img width="802" height="632" alt="Image" src="https://github.com/user-attachments/assets/560350e4-5b51-4c3c-ad65-ba1c094b6f70" />
+
+<img width="802" height="632" alt="Image" src="https://github.com/user-attachments/assets/7c982250-d396-40db-b17e-e7bec14ce48c" />
 
 ## 主な特徴
 
