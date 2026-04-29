@@ -19,7 +19,7 @@ export default {
         'theme-danger-hover': 'rgb(var(--color-theme-danger-hover) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['"MySymbolFont"', '"BIZ UDPGothic"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"MySymbolFont"','"EmDash"', '"源柔ゴシックP"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       }
     },
   },

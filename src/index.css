@@ -8,8 +8,14 @@
   unicode-range: U+2660, U+2664, U+2663, U+2667, U+2666, U+2662, U+2665, U+2661;
 }
 
+@font-face {
+  font-family: 'EmDash';
+  src: local('BIZ UDPゴシック');
+  unicode-range: U+2014;
+}
+
 :root {
-  font-family: 'BIZ UDPGothic', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'マメロン 3.5 Hi Regular', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   letter-spacing: 0.1px;
   font-weight: 400;
