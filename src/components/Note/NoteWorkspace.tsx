@@ -21,6 +21,7 @@ interface NoteWorkspaceProps {
     onCreateMemo: () => void;
     onCreateTaskList: () => void;
     onUpdateMemo: (id: string, content: string) => void;
+    onSwitchMemoType: (id: string) => void;
     onDuplicateMemo: (id: string) => void;
     onDeleteMemo: (id: string) => void;
     onExportMemo: (id: string) => void;
@@ -45,6 +46,7 @@ export function NoteWorkspace({
     onCreateMemo,
     onCreateTaskList,
     onUpdateMemo,
+    onSwitchMemoType,
     onDuplicateMemo,
     onDeleteMemo,
     onExportMemo,
@@ -142,6 +144,7 @@ export function NoteWorkspace({
                             lastCreatedId={lastCreatedId}
                             bottomRef={bottomRef}
                             onUpdateMemo={onUpdateMemo}
+                            onSwitchMemoType={onSwitchMemoType}
                             onDuplicateMemo={onDuplicateMemo}
                             onDeleteMemo={onDeleteMemo}
                             onExportMemo={onExportMemo}

@@ -33,6 +33,7 @@ function App() {
     createMemo,
     duplicateMemo,
     updateMemo,
+    switchMemoType,
     deleteMemo,
     exportMemo,
     exportNote,
@@ -88,6 +89,7 @@ function App() {
           onCreateMemo={createMemo}
           onCreateTaskList={() => createMemo(undefined, 'tasklist')}
           onUpdateMemo={updateMemo}
+          onSwitchMemoType={switchMemoType}
           onDuplicateMemo={duplicateMemo}
           onDeleteMemo={deleteMemo}
           onExportMemo={exportMemo}

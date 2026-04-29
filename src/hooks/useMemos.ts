@@ -136,6 +136,34 @@ export function useMemos() {
         }, 500);
     }, []);
 
+    const switchMemoType = useCallback(async (id: string) => {
+        const currentType = typeCache.current.get(id) || 'text';
+        const currentContent = contentCache.current.get(id) ?? '';
+        const newType: MemoType = currentType === 'tasklist' ? 'text' : 'tasklist';
+
+        const newContent = newType === 'tasklist'
+            ? currentContent.split('\n').map(line => `[ ] ${line}`).join('\n')
+            : currentContent.split('\n').map(line => {
+                if (line.startsWith('[x] ')) return line.slice(4);
+                if (line.startsWith('[ ] ')) return line.slice(4);
+                return line;
+            }).join('\n');
+
+        if (saveTimeoutRef.current[id]) {
+            clearTimeout(saveTimeoutRef.current[id]);
+            delete saveTimeoutRef.current[id];
+        }
+
+        contentCache.current.set(id, newContent);
+        typeCache.current.set(id, newType);
+        setLoadedMemos(prev => prev.map(memo =>
+            memo.id === id ? { ...memo, type: newType, content: newContent } : memo
+        ));
+
+        const fileContent = newType === 'tasklist' ? TASKLIST_MARKER + newContent : newContent;
+        await storage.writeText(getMemoPath(id), fileContent);
+    }, []);
+
     const deleteMemoFile = useCallback(async (id: string) => {
         const success = await storage.remove(getMemoPath(id));
         if (success) {
@@ -155,6 +183,7 @@ export function useMemos() {
         createMemoFile,
         duplicateMemoFile,
         updateMemo,
+        switchMemoType,
         deleteMemoFile
     };
 }

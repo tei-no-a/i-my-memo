@@ -45,6 +45,7 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
         createMemoFile,
         duplicateMemoFile,
         updateMemo,
+        switchMemoType,
         deleteMemoFile
     } = useMemos();
 
@@ -149,6 +150,7 @@ export function useWorkspace(exportSettings?: ExportSettings, allowShortcuts: bo
         createMemo,
         duplicateMemo,
         updateMemo,
+        switchMemoType,
         deleteMemo,
         exportMemo,
         exportNote,

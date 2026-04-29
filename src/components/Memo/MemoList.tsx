@@ -8,6 +8,7 @@ interface MemoListProps {
     lastCreatedId: string | null;
     bottomRef: React.RefObject<HTMLDivElement | null>;
     onUpdateMemo: (id: string, content: string) => void;
+    onSwitchMemoType: (id: string) => void;
     onDuplicateMemo: (id: string) => void;
     onDeleteMemo: (id: string) => void;
     onExportMemo: (id: string) => void;
@@ -17,7 +18,7 @@ interface MemoListProps {
     onMemoBlur?: () => void;
 }
 
-export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, onUpdateMemo, onDuplicateMemo, onDeleteMemo, onExportMemo, isTrashNote, onReturnToBoard, onMemoFocus, onMemoBlur }: MemoListProps) {
+export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, onUpdateMemo, onSwitchMemoType, onDuplicateMemo, onDeleteMemo, onExportMemo, isTrashNote, onReturnToBoard, onMemoFocus, onMemoBlur }: MemoListProps) {
     if (memos.length === 0) {
         return (
             <div className="text-center text-theme-fg/40 mt-20">
@@ -36,6 +37,7 @@ export function MemoList({ memos, activeNoteMemoIds, lastCreatedId, bottomRef, o
                     key={memo.id}
                     data={memo}
                     onUpdate={onUpdateMemo}
+                    onSwitchType={onSwitchMemoType}
                     onDuplicate={onDuplicateMemo}
                     onDelete={onDeleteMemo}
                     onExport={onExportMemo}

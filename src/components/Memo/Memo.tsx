@@ -11,6 +11,7 @@ interface MemoProps {
     data: MemoData;
 
     onUpdate: (id: string, content: string) => void;
+    onSwitchType: (id: string) => void;
     onDuplicate: (id: string) => void;
     onDelete: (id: string) => void;
     onExport: (id: string) => void;
@@ -23,7 +24,7 @@ interface MemoProps {
 
 const MENU_BUTTON_CLASS = 'w-full text-left px-4 py-2 text-sm text-theme-fg hover:bg-theme-bg-soft transition-colors';
 
-export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocus, isTrashNote, onReturnToBoard, onMemoFocus, onMemoBlur }: MemoProps) {
+export function Memo({ data, onUpdate, onSwitchType, onDuplicate, onDelete, onExport, autoFocus, isTrashNote, onReturnToBoard, onMemoFocus, onMemoBlur }: MemoProps) {
     const [isFocused, setIsFocused] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -116,6 +117,15 @@ export function Memo({ data, onUpdate, onDuplicate, onDelete, onExport, autoFocu
                                         className={MENU_BUTTON_CLASS}
                                     >
                                         複製する
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            onSwitchType(data.id);
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className={MENU_BUTTON_CLASS}
+                                    >
+                                        メモタイプ切り替え
                                     </button>
                                 </>
                             )}
